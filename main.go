@@ -40,6 +40,9 @@ func main() {
 	}
 	r.HandleFunc("/ws", wsHandler)
 	r.HandleFunc("/test", HomeHandler)
+	
+	go broadcaster()
+	
 	log.Print("Server running on " + PORT)
 	log.Fatal(srv.ListenAndServe())
 
