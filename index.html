@@ -4,39 +4,106 @@
 		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 		<meta content="utf-8" http-equiv="encoding">
 		<title>Ws test</title>
-	<script>
-		// if(window.WebSocket){
-			// console.log("WebSocket")
-		// } else {
-			// console.log("No WebSocket")
-		// }
-		ws = new WebSocket("ws://localhost:8000/ws");
-		// while(ws.readyState==WebSocket.CONNECTING){
-			// i+=1
-			// console.log("CONNECTING "+i)
-		// }
-
-		ws.onerror=function(event){
-			console.log("Error conncting"+event)
-		}
-		
-		ws.onopen=function(event){
-			ws.send("Hello server")
-		}
-		ws.onmessage=function(event){
-				console.log(event.data)
-
-		}
-		// if(ws.readyState==WebSocket.C)
-		// console.log("Wake")
-
-	</script>
-	<body>
-		
-
-	</body>
 
 	</head>
+	<body>
+		<h1 > Chat Client</h1>
+		<div class="message-div">
+			<p id="message-display" contenteditable></p>
+		</div>
+		<div class="input-div">
+			<input type="text" id="input-field" placeholder="Say something" maxlength="250" rows=4s autofocus></input>
+		</div>
+		<style>
+			body,html{
+				height: 100%;
+				background-color:#c9ced3;
+			}
+			h1{
+			 	text-align:center;
+			 	font-family: monospace;
+			}
+			.message-div{
+				height:50vh;
+				width:97vw;
+				margin:auto;
+				background-color:white;
+				overflow-y: scroll
+			} 
+
+			.input-div{
+				margin:auto;
+				margin-top:5vh;
+				width:90vw;
+			}
+			#input-field{
+				box-shadow: 15px 10px #1783ef;	
+				width:100%;
+				padding:0.9rem;
+			}
+			#error{
+				color:red;
+			}
+		</style>
+	</body>
+
+	<script>
+		var connected=false
+		//Front end implementation
+		console.log(document.getElementById("a"))
+		messageBox=document.getElementById('message-display')
+		inputField=document.getElementById('input-field')
+		help="AVAILABLE COMMANDS:\n"+
+		"/join channelName : to join a channel(name must contain only lowercase letters and underscores and must begin with a letter)"
+		
+		function displayError(){
+			alert("Error connecting to server")
+		}
+		function sendMessage(e){
+			// Update messageBox
+			let msg=e.target.value.trim()
+			if(msg=="/join"){
+				console.log("Joins")
+				// send join message
+			}
+			else if(msg=="/help"){
+				messageBox.innerText+=help
+			}
+			else{
+				if(ws.readyState != WebSocket.OPEN){
+					messageBox.innerText+="Not connected to server\n"
+				}
+				else{
+					messageBox.innerText+="\n"+e.target.value
+					//send message over socket
+					ws.send("hello")
+				}
+			}
+			inputField.value=""
+		}
+
+		// Register input field onchange function
+		inputField.onchange=sendMessage
+	
+		//Websockets implementation
+		var a="hello"
+		//Check if websockets are supported 
+		if(!(window.WebSocket)){
+			alert("Websockets not supported in this browser")
+		}
+
+		// Create websocket and register handlers
+		ws = new WebSocket("ws://localhost:8000/ws2");
+		ws.onerror=function(event){
+			displayError()
+		}
+		ws.onopen=function(event){
+			console.log("connected to server")
+		}
+		ws.onmessage=function(event){
+				messageBox.innerText+="\n"+event.data
+		}
+	</script>
 
 
 </html>
