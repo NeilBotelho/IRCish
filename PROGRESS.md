@@ -11,3 +11,6 @@ The plan is to use gorilla/websocket for websockets.
 - Websocket functionality implemented on client side. 
 - Server and client can now send messages to each other. But currently one client cannot send a message to another 
 
+### TODO
+- find how to identify disconnected clients
+- fix memory leak of stale clients
