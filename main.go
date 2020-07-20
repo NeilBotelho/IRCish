@@ -38,7 +38,6 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 		IdleTimeout:  15 * time.Second,
 	}
-	r.HandleFunc("/ws2", ws2Handler)
 	r.HandleFunc("/ws", wsHandler)
 	r.HandleFunc("/test", HomeHandler)
 	log.Print("Server running on " + PORT)
