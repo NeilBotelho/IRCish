@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta content="width=device-width, initial-scale=1" name="viewport" />
 		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 		<meta content="utf-8" http-equiv="encoding">
 		<title>Ws test</title>
 
 	</head>
 	<body>
-		<h1 > Chat Client</h1>
+		<h1 id="header" > Chat Client</h1>
 		<div class="message-div">
-			<p id="message-display" contenteditable></p>
+			<p id="message-display"></p>
 		</div>
 		<div class="input-div">
 			<input type="text" id="input-field" placeholder="Say something" maxlength="250" rows=4s autofocus></input>
@@ -19,22 +20,26 @@
 				height: 100%;
 				background-color:#c9ced3;
 			}
-			h1{
+			#header{
 			 	text-align:center;
 			 	font-family: monospace;
+			 	font-size:3vw;
 			}
 			.message-div{
 				height:50vh;
-				width:97vw;
+				/*width:97vw;*/
 				margin:auto;
 				background-color:white;
-				overflow-y: scroll
+				overflow-y: scroll;
+				font-size: 1.1vw;
 			} 
 
 			.input-div{
-				margin:auto;
+				/*margin:auto;*/
+				float:left;
 				margin-top:5vh;
-				width:90vw;
+				/*margin-right:3vh;*/
+				width:80%;
 			}
 			#input-field{
 				box-shadow: 15px 10px #1783ef;	
@@ -44,6 +49,18 @@
 			#error{
 				color:red;
 			}
+			@media (max-width:600px){
+				#header{
+					font-size:5vw;
+				}
+				.message-div{
+					font-family:Helvetica;
+					font-size:5vw;
+					height:80vh;
+				}
+
+       	 	}
+
 		</style>
 	</body>
 
@@ -92,7 +109,7 @@
 		}
 
 		// Create websocket and register handlers
-		ws = new WebSocket("wss:localhost:8000/ws");
+		ws = new WebSocket("ws://localhost:8000/ws");
 		ws.onerror=function(event){
 			displayError()
 		}
