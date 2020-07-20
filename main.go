@@ -38,6 +38,7 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 		IdleTimeout:  15 * time.Second,
 	}
+	r.HandleFunc("/ws2", ws2Handler)
 	r.HandleFunc("/ws", wsHandler)
 	r.HandleFunc("/test", HomeHandler)
 	log.Print("Server running on " + PORT)
@@ -47,24 +48,4 @@ func main() {
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello at %q", html.EscapeString(r.URL.Path))
-}
-
-func wsHandler(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	log.Println("Registered socket from " + r.RemoteAddr)
-	// time.Sleep(5 * time.Second)
-	for {
-		_, message, err := conn.ReadMessage()
-		if err != nil {
-			log.Println("Socket closed on client side")
-			return
-		}
-		log.Println("Message from " + r.RemoteAddr + ": " + string(message))
-		conn.WriteMessage(websocket.TextMessage, []byte("Hello socket"))
-	}
-	log.Println(conn)
 }
