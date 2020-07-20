@@ -62,7 +62,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	go clientWriter(client)
 	//Announce creation of client to broadcaster 
 	entering<-client
-	messages<- []byte(client.addr +"Just entered")
+	messages<- []byte(client.addr +" Just entered")
 	for {
 		_, clientMsg, err := conn.ReadMessage()
 		if err != nil {
@@ -73,6 +73,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			close(ch)
 			return
 		}
+		clientMsg=[]byte(addr+": "+string(clientMsg))
+		log.Println(string(clientMsg))
 		messages<-clientMsg
 		log.Println("Message from " + r.RemoteAddr + ": " + string(clientMsg))
 	}
