@@ -76,7 +76,7 @@
 				else{
 					messageBox.innerText+="\n"+e.target.value
 					//send message over socket
-					ws.send("hello")
+					ws.send(e.target.value)
 				}
 			}
 			inputField.value=""
