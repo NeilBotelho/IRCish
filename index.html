@@ -92,7 +92,7 @@
 		}
 
 		// Create websocket and register handlers
-		ws = new WebSocket("ws:localhost:8000/ws");
+		ws = new WebSocket("wss:localhost:8000/ws");
 		ws.onerror=function(event){
 			displayError()
 		}
