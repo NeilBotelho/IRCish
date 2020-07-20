@@ -1,30 +1,41 @@
+<!DOCTYPE html>
 <html>
 	<head>
+		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+		<meta content="utf-8" http-equiv="encoding">
 		<title>Ws test</title>
 	<script>
+		// if(window.WebSocket){
+			// console.log("WebSocket")
+		// } else {
+			// console.log("No WebSocket")
+		// }
 		ws = new WebSocket("ws://localhost:8000/ws");
-		// console.log(ws.OPEN)
-		// function sleep(ms) {
-	 // 	 return new Promise(resolve => setTimeout(resolve, ms));	
-		// }
-		// // sleep(30000)
-		// async function demo() {
-		//   console.log('Taking a break...');
-		//   await sleep(3000);
-		//   console.log('Two seconds later, showing sleep in a loop...');
-		// ws.send("HEllo")
-
-		//   // Sleep in loop
-		//   for (let i = 0; i < 5; i++) {
-		//     if (i === 3)
-		//       await sleep(2000);
-		//     console.log(i);
-		//   }
+		// while(ws.readyState==WebSocket.CONNECTING){
+			// i+=1
+			// console.log("CONNECTING "+i)
 		// }
 
-		// demo();
-		console.log("Wake")
+		ws.onerror=function(event){
+			console.log("Error conncting"+event)
+		}
+		
+		ws.onopen=function(event){
+			ws.send("Hello server")
+		}
+		ws.onmessage=function(event){
+				console.log(event.data)
+
+		}
+		// if(ws.readyState==WebSocket.C)
+		// console.log("Wake")
+
 	</script>
+	<body>
+		
+
+	</body>
+
 	</head>
 
 
