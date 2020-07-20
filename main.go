@@ -50,11 +50,21 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("Hello")
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
+	}
+	log.Println("Registered socket from " + r.RemoteAddr)
+	// time.Sleep(5 * time.Second)
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("Socket closed on client side")
+			return
+		}
+		log.Println("Message from " + r.RemoteAddr + ": " + string(message))
+		conn.WriteMessage(websocket.TextMessage, []byte("Hello socket"))
 	}
 	log.Println(conn)
 }
