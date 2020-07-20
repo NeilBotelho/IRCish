@@ -10,4 +10,4 @@ The plan is to use gorilla/websocket for websockets.
 - Basic functioning front end built(message list, input box)
 - Websocket functionality implemented on client side. 
 - Server and client can now send messages to each other. But currently one client cannot send a message to another 
-
+- Implemented communication between clients. Rooms/channels not yet implemented. Only a single room exists
