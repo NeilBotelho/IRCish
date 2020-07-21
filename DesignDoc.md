@@ -9,21 +9,24 @@ This isn't  a document of what has been implemented it is a guide for what I wan
 
 
 ## Data Structures used
-1. **Msg (struct):**
-	```golang
-	Msg{ //global type
-		OpCode *uint8 `json:"opcode"`
-		Content string `json:"content,omitempty"`
-		Room string `json:"room,omitempty"`
-	}
-	```
 1. **Client (struct):**
 	```golang
 	Client{ //global type
 		identifier string
-		writeCh chan Msg // send recieve message from broadcaster
-		terminate chan struct{} // terminate signal
+		writeCh *chan Msg // send recieve message from broadcaster
+		terminate *chan struct{} // terminate signal
 		conn *websocket.Conn
+	}
+	```
+
+1. **Msg (struct):**
+	```golang
+	Msg{ //global type
+		OpCode  *uint8 `json:"opcode"`
+		Content string `json:"content,omitempty"`
+		Room    string `json:"room,omitempty"`
+		client  *Client //Since the variable is lowercase it isn't marshalled by the json library
+		From    *string `json:"from,omitempty"`
 	}
 	```
 
@@ -39,12 +42,12 @@ This isn't  a document of what has been implemented it is a guide for what I wan
 
 1. **entering (channel)**
 	```golang
-	var entering := make(chan Client,chanBuff) //global channel
+	var entering := make(chan Msg,chanBuff) //global channel
 	```
 
 1. **leaving (channel)**
 	```golang
-	var leaving := make(chan Client,chanBuff) //global channel
+	var leaving := make(chan Msg,chanBuff) //global channel
 	```
 
 1. **messaging (channel)**
@@ -60,6 +63,7 @@ We use variables here instead of constants as we want use the address of the fol
 	- leave = 2
 	- identify = 3
 	- ping = 4
+	- leaveAll = 5
 1. Default Room Constant
 	- defaultRoom = "general"
 
