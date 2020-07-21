@@ -54,19 +54,21 @@ This isn't  a document of what has been implemented it is a guide for what I wan
 
 ## Global Variables(never modified)
 We use variables here instead of constants as we want use the address of the following
-Operation Codes(type is uint8)
+1. Operation Codes(type is uint8)
 	- communicate = 0
 	- join = 1
 	- leave = 2
 	- identify = 3
 	- ping = 4
+1. Default Room Constant
+	- defaultRoom = "general"
 
 ## Global constants
 1. Size constants(type is uint8)
 	- clientMsgBuff
 	- chanBuff
 
-1. PingTimeout(type is uint8)
+1. PingTimeout(type is int)
 
 ## Functions
 
