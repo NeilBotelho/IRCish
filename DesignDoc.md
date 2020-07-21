@@ -123,6 +123,12 @@ Only a single instance of broadcaster is created (as a goroutine) and the roomli
 
 **Performs:**
 - Infinite select over the messaging, entering and leaving channels
-	1. If a value is sent on messaging it checks the room and send the message to all clients in that room
-	1. If a value is sent on entering it checks with room is specified and adds the client to that room
-	1. If a value is sent on leaving it deleted that clients entry in that room and then checks if the room is empty and deletes it if it is
+- If a value is sent on messaging:
+	1. if the room exists it iterates over the clients in the room and send the message over the clients write channel
+- If a value is sent on entering:
+	1. First, if the specified room doesn't exist in the roomList it creates an empty room
+	1. Then it adds the client to the room 
+- If a value is sent on leaving:
+	1. If opcode=5(leaveAll) it checks every room for specified client and deletes each match it finds.
+	1. If opcode=2(leave) it deletes the client entry in specified room. No checking is done to see if client is in the room
+	1. If after the operation is complete the room is empty, the room is deleted from roomlist
