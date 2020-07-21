@@ -8,7 +8,7 @@ This isn't  a document of what has been implemented it is a guide for what I wan
 1. User can change handle using the /identify command(later will make usernames unique)
 
 
-## Data Structure used
+## Data Structures used
 1. **Msg (struct):**
 	```golang
 	Msg{ //global type
@@ -52,7 +52,7 @@ This isn't  a document of what has been implemented it is a guide for what I wan
 	var messaging:= make(chan Msg,chanBuff) //global channel
 	```
 
-## Global constant
+## Global constants
 1. Operation Codes(type is uint8)
 	- communicate = 0
 	- join = 1
@@ -69,18 +69,18 @@ This isn't  a document of what has been implemented it is a guide for what I wan
 ## Functions
 
 ### - Incoming connection handler(wsHandler):
-	**Parameters:**: w http.ResponseWriter, r \*http.Request
-	**Creates:** creates client struct 
-	**Performs:**
-	- upgrades connection to websocket
-	- starts clientWriter in a goroutine with pointer to client struct as parameter
-	- enter infinite loop to read user messages, create message struct and send it to the appropriate channel based on its opcode
-	- exits when socket is closed either by client or due to ReadTimeout(set everytime a message is read succesfully)
-	- prior to exiting it performs the following cleanup:
-		1. closes client.writeCh
-		1. send client over leaving channel
-		1. send an empty struct over terminate channel(to signal clientWriter to close) and closes the terminate channel
-		1. returns to end the goroutine
+**Parameters:**: w http.ResponseWriter, r \*http.Request
+**Creates:** creates client struct 
+**Performs:**
+- upgrades connection to websocket
+- starts clientWriter in a goroutine with pointer to client struct as parameter
+- enter infinite loop to read user messages, create message struct and send it to the appropriate channel based on its opcode
+- exits when socket is closed either by client or due to ReadTimeout(set everytime a message is read succesfully)
+- prior to exiting it performs the following cleanup:
+	1. closes client.writeCh
+	1. send client over leaving channel
+	1. send an empty struct over terminate channel(to signal clientWriter to close) and closes the terminate channel
+	1. returns to end the goroutine
 
 ### - Writing to client(clientWriter)
 **Parameters:**: cli \*Client
