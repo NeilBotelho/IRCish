@@ -34,7 +34,7 @@ This isn't  a document of what has been implemented it is a guide for what I wan
 
 1. **RoomList (map)**
 	```golang
-	var RoomList map[*Room]bool //Local to broadcast function
+	var RoomList map[string]Room //Local to broadcast function
 	```
 
 1. **entering (channel)**
