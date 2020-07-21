@@ -10,6 +10,15 @@ import(
 	"github.com/gorilla/websocket"
 	
 )
+
+type Client struct {
+	identity  string         //Needed?
+	writeCh   *chan Msg      // send recieve message from broadcaster
+	terminate *chan struct{} // terminate signal
+	conn      *websocket.Conn
+}
+
+
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	// Upgrade http to websocket
 	conn, err := upgrader.Upgrade(w, r, nil)
