@@ -32,12 +32,6 @@ var (
 	messaging = make(chan Msg,chanBuff)
 )
 
-type Client struct {
-	identity  string         //Needed?
-	writeCh   *chan Msg      // send recieve message from broadcaster
-	terminate *chan struct{} // terminate signal
-	conn      *websocket.Conn
-}
 
 type Msg struct {
 	OpCode  *uint8 `json:"opcode"`
