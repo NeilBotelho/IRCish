@@ -83,37 +83,3 @@ func broadcaster() {
 	}
 
 }
-
-
-func TestingHandler(w http.ResponseWriter, r *http.Request) {
-
-	// Upgrade http to websocket
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	log.Println("Registered socket from " + r.RemoteAddr)
-
-	// Read a message to this client
-	// Blocks till message is recieved
-	_, message, err := conn.ReadMessage()
-	if err != nil {
-		log.Println("Socket closed on client side")
-		return
-	}
-	log.Println("Message from " + r.RemoteAddr + ": " + string(message))
-
-	// Send a message to client every second
-	ticker := time.Tick(1 * time.Second)
-	conn.WriteMessage(websocket.TextMessage, []byte("Hello socket"))
-	messageNo := 0
-	for {
-		select {
-		case <-ticker:
-			messageNo++
-			conn.WriteMessage(websocket.TextMessage, []byte("Message number "+strconv.Itoa(messageNo)))
-		}
-	}
-
-}
