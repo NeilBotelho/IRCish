@@ -9,48 +9,48 @@ This isn't  a document of what has been implemented it is a guide for what I wan
 
 
 ## Data Structure used
-1. Msg (struct)
-```golang
-Msg{ //global type
-	OpCode *uint8 `json:"opcode"`
-	Content string `json:"content,omitempty"`
-	Room string `json:"room,omitempty"`
-}
-```
-1. Client (struct)
-```golang
-Client{ //global type
-	identifier string
-	writeCh chan Msg // send recieve message from broadcaster
-	terminate chan struct{} // terminate signal
-	conn *websocket.Conn
-}
-```
+1. **Msg (struct):**
+	```golang
+	Msg{ //global type
+		OpCode *uint8 `json:"opcode"`
+		Content string `json:"content,omitempty"`
+		Room string `json:"room,omitempty"`
+	}
+	```
+1. **Client (struct):**
+	```golang
+	Client{ //global type
+		identifier string
+		writeCh chan Msg // send recieve message from broadcaster
+		terminate chan struct{} // terminate signal
+		conn *websocket.Conn
+	}
+	```
 
-1. Room (map)
-```golang
-var Room map[*Client]bool //global type
-```
+1. **Room (map)**
+	```golang
+	var Room map[*Client]bool //global type
+	```
 
-1. RoomList (map)
-```golang
-var RoomList map[*Room]bool //Local to broadcast function
-```
+1. **RoomList (map)**
+	```golang
+	var RoomList map[*Room]bool //Local to broadcast function
+	```
 
-1. entering (channel)
-```golang
-var entering := make(chan Client,chanBuff) //global channel
-```
+1. **entering (channel)**
+	```golang
+	var entering := make(chan Client,chanBuff) //global channel
+	```
 
-1. leaving (channel)
-```golang
-var leaving := make(chan Client,chanBuff) //global channel
-```
+1. **leaving (channel)**
+	```golang
+	var leaving := make(chan Client,chanBuff) //global channel
+	```
 
-1. messaging (channel)
-```golang
-var messaging:= make(chan Msg,chanBuff) //global channel
-```
+1. **messaging (channel)**
+	```golang
+	var messaging:= make(chan Msg,chanBuff) //global channel
+	```
 
 ## Global constant
 1. Operation Codes(type is uint8)
@@ -68,21 +68,21 @@ var messaging:= make(chan Msg,chanBuff) //global channel
 
 ## Functions
 
-### Incoming connection handler(wsHandler):
-**Parameters:**: w http.ResponseWriter, r \*http.Request
-**Creates:** creates client struct 
-**Performs:**
-- upgrades connection to websocket
-- starts clientWriter in a goroutine with pointer to client struct as parameter
-- enter infinite loop to read user messages, create message struct and send it to the appropriate channel based on its opcode
-- exits when socket is closed either by client or due to ReadTimeout(set everytime a message is read succesfully)
-- prior to exiting it performs the following cleanup:
-	1. closes client.writeCh
-	1. send client over leaving channel
-	1. send an empty struct over terminate channel(to signal clientWriter to close) and closes the terminate channel
-	1. returns to end the goroutine
+### - Incoming connection handler(wsHandler):
+	**Parameters:**: w http.ResponseWriter, r \*http.Request
+	**Creates:** creates client struct 
+	**Performs:**
+	- upgrades connection to websocket
+	- starts clientWriter in a goroutine with pointer to client struct as parameter
+	- enter infinite loop to read user messages, create message struct and send it to the appropriate channel based on its opcode
+	- exits when socket is closed either by client or due to ReadTimeout(set everytime a message is read succesfully)
+	- prior to exiting it performs the following cleanup:
+		1. closes client.writeCh
+		1. send client over leaving channel
+		1. send an empty struct over terminate channel(to signal clientWriter to close) and closes the terminate channel
+		1. returns to end the goroutine
 
-### Writing to client(clientWriter)
+### - Writing to client(clientWriter)
 **Parameters:**: cli \*Client
 Runs as a goroutine and each Client object has one associated with it
 **Creates:**
@@ -93,7 +93,7 @@ Runs as a goroutine and each Client object has one associated with it
 	2. If ping ticker sends a value it sends an empty message to the client with opcode 4
 	3. if Client.writeCh sends a value it sends it to the client
 
-### Broadcast (broadcaster)
+### - Broadcast (broadcaster)
 **Parameters:**: None
 Only a single instance of broadcaster is created (as a goroutine) and the roomlist is local to it (to prevent race conditions with RoomList)
 **Creates:** RoomList
