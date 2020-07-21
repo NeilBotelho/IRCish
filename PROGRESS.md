@@ -12,6 +12,23 @@ The plan is to use gorilla/websocket for websockets.
 - Server and client can now send messages to each other. But currently one client cannot send a message to another 
 - Implemented communication between clients. Rooms/channels not yet implemented. Only a single room exists
 
-### TODO
-- find how to identify disconnected clients
-- fix memory leak of stale clients
+**TODO**
+
+- ~~find how to identify disconnected clients~~
+- ~~fix memory leak of stale clients~~
+
+#### 21 Jul 2020
+- Rewrite of broadcast and message system complete(see DesignDoc.md for details on implementation)
+- JSON communication with client implemented on server side(client side remaining) 
+- Broke client.go into room.go(Room, message and braodcast definitions) and client.go(client handlers and struct definitions)
+- Rooms functionality implemented
+- Users can now join and leave rooms as they wish
+- Users are now identified by a randomly generated number rather than their public IP
+
+**TODO**
+
+- Break the wsHandler function into smaller function(its getting a bit long and unwieldly)
+- implement identify logic
+- implement ping logic and enable read timeouts on sockets
+- Update client side logic and UI to handle json and multiple rooms(will probably take me the longest)
+  
