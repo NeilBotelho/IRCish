@@ -52,14 +52,16 @@ This isn't  a document of what has been implemented it is a guide for what I wan
 	var messaging:= make(chan Msg,chanBuff) //global channel
 	```
 
-## Global constants
-1. Operation Codes(type is uint8)
+## Global Variables(never modified)
+We use variables here instead of constants as we want use the address of the following
+Operation Codes(type is uint8)
 	- communicate = 0
 	- join = 1
 	- leave = 2
 	- identify = 3
 	- ping = 4
 
+## Global constants
 1. Size constants(type is uint8)
 	- clientMsgBuff
 	- chanBuff
@@ -69,8 +71,10 @@ This isn't  a document of what has been implemented it is a guide for what I wan
 ## Functions
 
 ### - Incoming connection handler(wsHandler):
-**Parameters:**: w http.ResponseWriter, r \*http.Request
+**Parameters:** w http.ResponseWriter, r \*http.Request
+
 **Creates:** creates client struct 
+
 **Performs:**
 - upgrades connection to websocket
 - starts clientWriter in a goroutine with pointer to client struct as parameter
@@ -83,10 +87,14 @@ This isn't  a document of what has been implemented it is a guide for what I wan
 	1. returns to end the goroutine
 
 ### - Writing to client(clientWriter)
-**Parameters:**: cli \*Client
+**Parameters:** cli \*Client
+
 Runs as a goroutine and each Client object has one associated with it
+
 **Creates:**
+
  a ping Ticker that send a value over a channel every 10 seconds
+
 **Performs:**
 - Infinite select statement on the Client.terminate, a ping ticker and Client.writeCh channels
 	1. If Client.terminate sends a value it exits
@@ -94,9 +102,12 @@ Runs as a goroutine and each Client object has one associated with it
 	3. if Client.writeCh sends a value it sends it to the client
 
 ### - Broadcast (broadcaster)
-**Parameters:**: None
+**Parameters:** None
+
 Only a single instance of broadcaster is created (as a goroutine) and the roomlist is local to it (to prevent race conditions with RoomList)
+
 **Creates:** RoomList
+
 **Performs:**
 - Infinite select over the messaging, entering and leaving channels
 	1. If a value is sent on messaging it checks the room and send the message to all clients in that room
