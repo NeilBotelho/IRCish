@@ -83,8 +83,15 @@ We use variables here instead of constants as we want use the address of the fol
 
 **Performs:**
 - upgrades connection to websocket
+- creates client struct
+- sets user identity to random 5 digit number
 - starts clientWriter in a goroutine with pointer to client struct as parameter
-- enter infinite loop to read user messages, create message struct and send it to the appropriate channel based on its opcode
+- enter infinite loop to read user messages, unmarshall the json(user response) into a Msg struct and send it to the appropriate channel based on its opcode
+- Its response to opcodes is as follows:
+	1. if opcode=0, it adds the user identity to the messages "From" field and sends it over the messaging channel
+	1. if opcode=1, it sends the message over the entering channel, then changes the opcode to 0(communicate) and sends it over the messaging channel
+	1. if opcode=2 it sends the message over the leaving channel
+	1. remaining opcode responses yet to be designed
 - exits when socket is closed either by client or due to ReadTimeout(set everytime a message is read succesfully)
 - prior to exiting it performs the following cleanup:
 	1. closes client.writeCh
