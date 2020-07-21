@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -9,30 +11,57 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type Client struct {
-	addr string
-	ch chan []byte //send recieve message from broadcaster
-	conn *websocket.Conn
-	exit chan struct{} // terminate signal
-}
+const (
+	// operations
+	communicate   uint8 = 0
+	join		  uint8 = 1
+	leave         uint8 = 2
+	identify      uint8 = 3
+	ping          uint8 = 4
 
-var (
-	entering=make(chan Client)
-	leaving=make(chan Client)
-	messages=make(chan []byte)
+	// Channel Buffer Size constants
+	clientMsgBuff uint8 = 1
+	chanBuff      uint8 = 1
+
+	// Ping timeout
+	pingTimeout   uint8 = 15 //seconds	  
 )
 
-func broadcaster(){
-	log.Println("broadcaster")
-	clients:=make(map[Client]bool)
-	for{
-		select{
-		case msg:= <-messages:
-			for cli :=range clients{
-				cli.ch<-msg
+var (
+	entering = make(chan Client,)
+	leaving  = make(chan Client)
+	messages = make(chan Msg)
+)
+
+type Client struct{ 
+	identifier string //Needed?
+	writeCh chan Msg // send recieve message from broadcaster
+	terminate chan struct{} // terminate signal
+	conn *websocket.Conn
+}
+
+type Msg struct{ 
+	OpCode *uint8 `json:"opcode"`
+	Content string `json:"content,omitempty"`
+	Room string `json:"room,omitempty"`
+}
+
+type Room map[*Client]bool
+
+
+func broadcaster() {
+	var RoomList:=map[string]Room
+	clients := make(map[Client]bool)
+	for {
+		select {
+		case msg := <-messages:
+			if *msg.OpCode == communicate {
+				for cli := range clients {
+					cli.ch <- msg
+				}
 			}
 		case cli := <-entering:
-			clients[cli]=true;
+			clients[cli] = true
 
 		case cli := <-leaving:
 			delete(clients, cli)
@@ -52,48 +81,53 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	if addr == "" {
 		addr = r.RemoteAddr
 	}
+	addr += ":"
 	// Make communication and exit channel
-	ch := make(chan []byte)
+	ch := make(chan Msg)
 	exit := make(chan struct{})
 
 	// Make client object
-	client := Client{addr,ch, conn,exit}
+	client := Client{addr, ch, conn, exit}
+
 	// Register client writer in a go routine
-	go clientWriter(client)
-	//Announce creation of client to broadcaster 
-	entering<-client
-	messages<- []byte(client.addr +" Just entered")
+	go clientWriter(&client)
+
+	//Announce creation of client to broadcaster
+	entering <- client
+	messages <- Msg{&announce, client.addr + " Just entered"}
+
+	var msg Msg
 	for {
+		conn.SetReadDeadline(time.Now().Add(time.Second * 1))
 		_, clientMsg, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("Socket closed on client side")
-			exit<-struct{}{}
-			leaving<-client
-			close(exit)
+			fmt.Println(err)
+			leaving <- client
+			exit <- struct{}{}
 			close(ch)
+			close(exit)
+			log.Println("Socket closed on client side")
 			return
 		}
-		clientMsg=[]byte(addr+": "+string(clientMsg))
-		log.Println(string(clientMsg))
-		messages<-clientMsg
-		log.Println("Message from " + r.RemoteAddr + ": " + string(clientMsg))
+		err = json.Unmarshal(clientMsg, &msg)
+		if err != nil {
+			fmt.Println("Error unmarshalling")
+		}
+		messages <- msg
 	}
 
 }
 
-func clientWriter(cli Client){
-	for{
-		select{
+func clientWriter(cli *Client) {
+	for {
+		select {
 		case <-cli.exit:
 			return
 		case msg := <-cli.ch:
-			cli.conn.WriteMessage(websocket.TextMessage,msg)
+			cli.conn.WriteMessage(websocket.TextMessage, []byte(msg.Content))
 		}
 	}
 }
-
-
-
 
 func TestingHandler(w http.ResponseWriter, r *http.Request) {
 
