@@ -1,12 +1,5 @@
 package main
 
-import (
-	"log"
-	"net/http"
-	"strconv"
-	"time"
-	"github.com/gorilla/websocket"
-)
 
 const (
 	// Channel Buffer Size constants (never changed)
