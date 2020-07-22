@@ -1,14 +1,14 @@
 package main
 
-import(
-	"math/rand"
+import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"strconv"
+
 	"github.com/gorilla/websocket"
-	
 )
 
 type Client struct {
@@ -17,7 +17,6 @@ type Client struct {
 	terminate *chan struct{} // terminate signal
 	conn      *websocket.Conn
 }
-
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	// Upgrade http to websocket
@@ -37,14 +36,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		identity:  strconv.Itoa(RandInt()), //Random Integer
 	}
 
-	//  Create Msg object to be used by this thread
-	var msg Msg
-
 	// Register client writer in a go routine
 	go clientWriter(&client)
 
 	//Announce creation of client to broadcaster
-	msg = Msg{
+	msg := Msg{
 		OpCode:  &communicate,
 		Content: client.identity + " Just entered",
 		Room:    defaultRoom,
@@ -55,18 +51,45 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Entering")
 	entering <- msg
 
+	recieveAndResolve(&client)
+
+}
+
+func clientWriter(cli *Client) {
+	for {
+		select {
+		case <-*cli.terminate:
+			return
+		case msg := <-*cli.writeCh:
+			out, err := json.Marshal(msg)
+			if err != nil {
+				continue
+			}
+			cli.conn.WriteMessage(websocket.TextMessage, out)
+		}
+	}
+}
+
+func RandInt() int {
+	return rand.Intn(89999) + 10000
+}
+
+func recieveAndResolve(client *Client) {
+
 	//Set initial ReadDeadline
 	// conn.SetReadDeadline(time.Now().Add(time.Second * pingTimeout))
 
+	// Msg Var to be used in for loop
+	var msg Msg
+
 	for {
-		_, clientMsg, err := conn.ReadMessage()
+		_, clientMsg, err := client.conn.ReadMessage()
 		if err != nil {
 			// Close connection in case of error
-			leaving <- Msg{OpCode: &leaveAll, client: &client}
+			leaving <- Msg{OpCode: &leaveAll, client: client}
 			*client.terminate <- struct{}{}
-			close(writeCh)
-			close(terminate)
-
+			close(*client.writeCh)
+			close(*client.terminate)
 			log.Println("Socket closed")
 			return
 		}
@@ -95,24 +118,4 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 		}
 	}
-
-}
-
-func clientWriter(cli *Client) {
-	for {
-		select {
-		case <-*cli.terminate:
-			return
-		case msg := <-*cli.writeCh:
-			out, err := json.Marshal(msg)
-			if err != nil {
-				continue
-			}
-			cli.conn.WriteMessage(websocket.TextMessage, out)
-		}
-	}
-}
-
-func RandInt() int {
-	return rand.Intn(89999) + 10000
 }
