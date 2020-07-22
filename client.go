@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/gorilla/websocket"
@@ -112,10 +113,31 @@ func recieveAndResolve(client *Client) {
 		case &leave:
 			leaving <- msg
 			fmt.Println("leaving")
-			// case &identify:
-			// if nameCheck(msg.)
-			// client.identity=msg.content
-
+		case &identify:
+			if usernameValidate(msg.Content) {
+				messaging <- Msg{
+					OpCode:  &notify,
+					Content: client.identity + " --> " + msg.Content,
+				}
+				client.identity = msg.Content
+				*client.writeCh <- Msg{
+					OpCode: &identify,
+					Content: msg.Content
+				}
+			}
 		}
 	}
+}
+
+func usernameValidate(username string) bool {
+	var pass bool
+	var err error
+	if pass, err = regexp.MatchString(`\s`, username); pass && err == nil {
+		return false
+	}
+	pass, err = regexp.MatchString(`[\w]{2,10}`, username)
+	if pass, err = regexp.MatchString(`[\W]{2,10}`, username); pass && err == nil {
+		return false
+	}
+	return true
 }
