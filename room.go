@@ -11,12 +11,13 @@ const (
 
 var (
 	// operations
-	communicate uint8  = 0
-	join        uint8  = 1
-	leave       uint8  = 2
-	identify    uint8  = 3
-	ping        uint8  = 4
-	leaveAll    uint8  = 5
+	communicate uint8 = 0
+	join        uint8 = 1
+	leave       uint8 = 2
+	identify    uint8 = 3
+	ping        uint8 = 4
+	leaveAll    uint8 = 5
+	notify		uint8 = 6
 	defaultRoom string = "general"
 
 	//Communication Channel

@@ -64,6 +64,7 @@ We use variables here instead of constants as we want use the address of the fol
 	- identify = 3
 	- ping = 4
 	- leaveAll = 5
+	- notify = 5
 1. Default Room Constant
 	- defaultRoom = "general"
 
