@@ -27,8 +27,20 @@ The plan is to use gorilla/websocket for websockets.
 
 **TODO**
 
-- Break the wsHandler function into smaller function(its getting a bit long and unwieldly)
-- implement identify logic
+- ~Break the wsHandler function into smaller function(its getting a bit long and unwieldly)~
+- ~implement identify logic~
 - implement ping logic and enable read timeouts on sockets
 - Update client side logic and UI to handle json and multiple rooms(will probably take me the longest)
   
+#### 26 Jul 2020
+- Client UI completed. Took a while, not very good at frontend. 
+- Client UI made responsive
+- Rooms implemented in client UI
+- Identify logic implemented server side
+
+**TODO**
+- Complete client side logic for:
+	- Sending and recieving messages
+	- Changing identity
+	- leaving and joining rooms
+	- switching rooms (will take a while)
