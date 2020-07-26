@@ -26,7 +26,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	// Make write and terminate channel
+	// Make write channel and terminate channel for client object
 	writeCh := make(chan Msg)
 	terminate := make(chan struct{})
 
@@ -42,18 +42,65 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Announce creation of client to broadcaster
 	msg := Msg{
-		OpCode:  &communicate,
+		OpCode:  &notify,
 		Content: client.identity + " Just entered",
 		Room:    defaultRoom,
 		client:  &client,
-		From:    &client.identity,
 	}
 	messaging <- msg
-	fmt.Println("Entering")
+	// Optionally set Opcode to join, but not necessary
 	entering <- msg
 
-	recieveAndResolve(&client)
+	for {
+		_, clientMsg, err := client.conn.ReadMessage()
+		if err != nil {
+			// Close connection in case of error
+			leaving <- Msg{OpCode: &leaveAll, client: &client}
+			*client.terminate <- struct{}{}
+			close(*client.writeCh)
+			close(*client.terminate)
+			log.Println("Socket closed")
+			return
+		}
+		// conn.SetReadDeadline(time.Now().Add(time.Second * pingTimeout))
+		err = json.Unmarshal(clientMsg, &msg)
+		if err != nil {
+			fmt.Println("Error unmarshalling")
+			continue
+		}
+		resolveRequest(&client,msg)
 
+	}
+
+}
+func resolveRequest(client *Client, msg Msg) {
+	//Set initial ReadDeadline
+	// conn.SetReadDeadline(time.Now().Add(time.Second * pingTimeout))
+	switch msg.OpCode {
+		case &communicate:
+			msg.From = &client.identity
+			messaging <- msg
+			fmt.Println("Communication")
+		case &join:
+			entering <- msg
+			msg.OpCode = &communicate
+			messaging <- msg
+		case &leave:
+			leaving <- msg
+			fmt.Println("leaving")
+		case &identify:
+			if usernameValidate(msg.Content) {
+				messaging <- Msg{
+					OpCode:  &notify,
+					Content: client.identity + " --> " + msg.Content,
+				}
+				client.identity = msg.Content
+				*client.writeCh <- Msg{
+					OpCode: &identify,
+					Content: msg.Content,
+			}
+		}
+	}
 }
 
 func clientWriter(cli *Client) {
@@ -75,59 +122,6 @@ func RandInt() int {
 	return rand.Intn(89999) + 10000
 }
 
-func recieveAndResolve(client *Client) {
-
-	//Set initial ReadDeadline
-	// conn.SetReadDeadline(time.Now().Add(time.Second * pingTimeout))
-
-	// Msg Var to be used in for loop
-	var msg Msg
-
-	for {
-		_, clientMsg, err := client.conn.ReadMessage()
-		if err != nil {
-			// Close connection in case of error
-			leaving <- Msg{OpCode: &leaveAll, client: client}
-			*client.terminate <- struct{}{}
-			close(*client.writeCh)
-			close(*client.terminate)
-			log.Println("Socket closed")
-			return
-		}
-		// conn.SetReadDeadline(time.Now().Add(time.Second * pingTimeout))
-		err = json.Unmarshal(clientMsg, &msg)
-		if err != nil {
-			fmt.Println("Error unmarshalling")
-			continue
-		}
-
-		switch msg.OpCode {
-		case &communicate:
-			msg.From = &client.identity
-			messaging <- msg
-			fmt.Println("Communication")
-		case &join:
-			entering <- msg
-			msg.OpCode = &communicate
-			messaging <- msg
-		case &leave:
-			leaving <- msg
-			fmt.Println("leaving")
-		case &identify:
-			if usernameValidate(msg.Content) {
-				messaging <- Msg{
-					OpCode:  &notify,
-					Content: client.identity + " --> " + msg.Content,
-				}
-				client.identity = msg.Content
-				*client.writeCh <- Msg{
-					OpCode: &identify,
-					Content: msg.Content
-				}
-			}
-		}
-	}
-}
 
 func usernameValidate(username string) bool {
 	var pass bool
