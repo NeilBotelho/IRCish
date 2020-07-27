@@ -34,19 +34,21 @@ body,html{
 	/*justify-content: center;*/
 	align-items: center;
 }
-.message-feed{
+#message-feed{
 	--message-box-width:87%;
 	background-color: white;
 	box-shadow:1px 2px 3px 1px;
 	width:var(--message-box-width);
-	overflow-y: :scroll;
 	height: 90%;
+	overflow :scroll;
+	position: relative;
 }
 .message-display{
 	padding-left:0.6rem;
 	font-size:1.2rem;
 	height: 100%;
-	overflow-x: scroll;
+	position: absolute;
+	display: none;
 }
 #input-div{
 	margin-top:2rem;
@@ -69,7 +71,7 @@ body,html{
 	#header{
 		font-size:5vw;
 	}
-	.message-feed{
+	#message-feed{
 		font-family:Helvetica;
 		font-size:5vw;
 		height:80vh;
