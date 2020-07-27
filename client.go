@@ -29,7 +29,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	// Make write channel and terminate channel for client object
 	writeCh := make(chan Msg)
 	terminate := make(chan struct{})
-
 	// Make client object
 	client := Client{writeCh: &writeCh,
 		terminate: &terminate,
@@ -50,8 +49,10 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	messaging <- msg
 	// Optionally set Opcode to join, but not necessary
 	entering <- msg
-
 	for {
+		//Clear msg
+		msg=Msg{}
+		
 		_, clientMsg, err := client.conn.ReadMessage()
 		if err != nil {
 			// Close connection in case of error
@@ -69,36 +70,33 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		resolveRequest(&client,msg)
-
 	}
 
 }
 func resolveRequest(client *Client, msg Msg) {
 	//Set initial ReadDeadline
 	// conn.SetReadDeadline(time.Now().Add(time.Second * pingTimeout))
-	switch msg.OpCode {
-		case &communicate:
+	switch *msg.OpCode {
+		case communicate:
+			log.Println("Communication")
 			msg.From = &client.identity
 			messaging <- msg
-			fmt.Println("Communication")
-		case &join:
+		case join:
+			log.Println("join")
 			entering <- msg
 			msg.OpCode = &communicate
 			messaging <- msg
-		case &leave:
+		case leave:
 			leaving <- msg
-			fmt.Println("leaving")
-		case &identify:
+			log.Println("leaving")
+		case identify:
+			log.Println("identify")
 			if usernameValidate(msg.Content) {
 				messaging <- Msg{
 					OpCode:  &notify,
 					Content: client.identity + " --> " + msg.Content,
 				}
 				client.identity = msg.Content
-				*client.writeCh <- Msg{
-					OpCode: &identify,
-					Content: msg.Content,
-			}
 		}
 	}
 }
@@ -113,6 +111,7 @@ func clientWriter(cli *Client) {
 			if err != nil {
 				continue
 			}
+
 			cli.conn.WriteMessage(websocket.TextMessage, out)
 		}
 	}
