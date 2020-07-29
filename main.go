@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"html"
+	// "html"
 	"log"
 	"net/http"
 	"os"
 	"time"
-
+	"io/ioutil"
 	"github.com/gorilla/websocket"
 
 	"github.com/gorilla/mux"
@@ -22,11 +22,11 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
+
 func main() {
 	if len(os.Args) > 1 {
 		PORT = os.Args[1]
 	}
-
 	r := mux.NewRouter() // maybe set .StrictSlash(false)?
 	srv := &http.Server{
 		// Wrap mux in a timeout Handler
@@ -38,8 +38,11 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 		IdleTimeout:  15 * time.Second,
 	}
+	fs := http.FileServer(http.Dir("./static/"))
+    r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
+	// r.PathPrefix("/static/").Handler(http.FileServer(http.Dir("./static/")))
 	r.HandleFunc("/ws", wsHandler)
-	r.HandleFunc("/test", HomeHandler)
+	r.HandleFunc("/", HomeHandler)
 
 	go broadcaster()
 
@@ -49,5 +52,9 @@ func main() {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello at %q", html.EscapeString(r.URL.Path))
+	p,err:=ioutil.ReadFile("./public/index.html")
+	if err!=nil{
+		log.Fatal(err)
+	}
+	fmt.Fprintf(w, "%s", string(p))
 }
