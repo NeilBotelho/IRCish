@@ -9,7 +9,7 @@ var inputField=document.getElementById('input-field')//used for clearing input f
 var currentMessages
 var currentRoom
 var help="AVAILABLE COMMANDS:\n\n"+
-"/join channelName : to join a channel(name must contain only lowercase letters, numbers and underscores. Room names must be between 2 and 10 characters long)\n\n"+
+"/join channelName : to join a room. Room names must contain only lowercase letters, numbers and underscores. Room names must be between 2 and 10 characters long)\n\n"+
 "/identify username : to change how you are identified to 'username'. Usernames can contain any case letters, numbers and underscores. Usernames must be between  2 and 10 characters long. Usernames are not unique\n\n"+
 "/clear : clears all messages from current room"
 
