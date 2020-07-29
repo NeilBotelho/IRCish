@@ -1,5 +1,5 @@
 package main
-
+// import "fmt"
 
 const (
 	// Channel Buffer Size constants (never changed)
@@ -55,8 +55,14 @@ func broadcaster() {
 
 		case msg := <-leaving:
 			if *msg.OpCode == leaveAll {
+				msg.OpCode=&notify
 				for roomName, _ := range RoomList {
-					delete(RoomList[roomName], msg.client)
+					if(RoomList[roomName][msg.client]){
+						delete(RoomList[roomName], msg.client)
+						for cli, _ := range RoomList[roomName] {
+							*cli.writeCh <- msg
+						}
+					}
 					if len(RoomList[roomName]) == 0 {
 						delete(RoomList, roomName)
 					}
