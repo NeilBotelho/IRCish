@@ -52,8 +52,8 @@ function roomSwitch(roomId){
 	currentMessages.setAttribute("style","display:block")
 	
 	currentRoom.classList.remove("active-room")
-	currentRoom.classList.remove("new-messages")
 	currentRoom=document.getElementById(roomName+"-room")
+	currentRoom.classList.remove("new-messages")
 	currentRoom.classList.add("active-room")
 
 }
@@ -61,11 +61,14 @@ function roomSwitch(roomId){
 
 function updateMessages(newline,roomName=null,classes=[]){
 	// create new message in the room's messages
+	currRoomName=getRoomFromId(currentMessages.id)
 	if(roomName==null){
-		messages=document.getElementById(getRoomFromId(currentMessages.id)+"-messages")
+		messages=document.getElementById(currRoomName+"-messages")
 	}
 	else{
 		messages=document.getElementById(roomName+"-messages")
+		if (currRoomName!=roomName)
+		document.getElementById(roomName+"-room").classList.add("new-messages")
 	}
 	var newcontent = document.createElement('p');
 	newcontent.innerText = newline+"\n";
@@ -155,6 +158,9 @@ ws.onerror=function(event){
 ws.onopen=function(event){
 	console.log("connected to server")
 }
+ws.onclose=function(event){
+	alert("Connection to server closed")
+}
 ws.onmessage=function(event){
 	// console.log(event.data)
 	reply=JSON.parse(event.data)
@@ -163,13 +169,17 @@ ws.onmessage=function(event){
 		case 0:
 		content=reply.from+": "+reply.content
 		updateMessages(content,reply.room)
-		console.log("Recieved ",reply)
 		break
 		case 4:
 		ws.send(JSON.stringify({"opcode":4}))
 		break
 		case 6:
-		updateMessages("System: "+reply.content,roomName=null,classes=['system-notification'])
+		if(reply.room!=null){
+			updateMessages("System: "+reply.content,roomName=reply.room,classes=['system-notification'])
+		}
+		else{
+			updateMessages("System: "+reply.content,roomName=null,classes=['system-notification'])
+		}
 		break
 		default:
 		console.log("No handle case",reply)
