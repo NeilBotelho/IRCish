@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
-
+	"time"
 	"github.com/gorilla/websocket"
 )
 
@@ -21,6 +21,7 @@ type Client struct {
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	// Upgrade http to websocket
+	
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
@@ -65,10 +66,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			*client.terminate <- struct{}{}
 			close(*client.writeCh)
 			close(*client.terminate)
-			log.Println("Socket closed")
+			log.Println("Socket closed",err)
 			return
 		}
-		// conn.SetReadDeadline(time.Now().Add(time.Second * pingTimeout))
+		// Set initial ReadDeadline
+		conn.SetReadDeadline(time.Now().Add(time.Second * pingTimeout))
 		err = json.Unmarshal(clientMsg, &msg)
 		if err != nil {
 			fmt.Println("Error unmarshalling")
@@ -79,8 +81,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func resolveRequest(client *Client, msg Msg) {
-	//Set initial ReadDeadline
-	// conn.SetReadDeadline(time.Now().Add(time.Second * pingTimeout))
 	msg.client=client
 	switch *msg.OpCode {
 		case communicate:
@@ -97,9 +97,9 @@ func resolveRequest(client *Client, msg Msg) {
 			entering <- msg
 		case leave:
 			leaving <- msg
-			log.Println("leaving")
+			log.Println("Leaving")
 		case identify:
-			log.Println("identify")
+			log.Println("Identify")
 			if usernameValidate(msg.Content) {
 				messaging <- Msg{
 					OpCode:  &notifyAll,
@@ -107,22 +107,28 @@ func resolveRequest(client *Client, msg Msg) {
 					client: client,
 				}
 				client.identity = msg.Content
-		}
+			}
+		case ping:
+			log.Println("Ping")
+			return
 	}
 }
 
 func clientWriter(cli *Client) {
+	pinger:=time.Tick(+(time.Second*pingTimeout-4))
 	for {
 		select {
 		case <-*cli.terminate:
+			close(pinger)
 			return
 		case msg := <-*cli.writeCh:
 			out, err := json.Marshal(msg)
 			if err != nil {
 				continue
 			}
-
 			cli.conn.WriteMessage(websocket.TextMessage, out)
+		case <-pinger:
+			cli.conn.WriteMessage(websocket.TextMessage,[]byte(`{"opcode":4}`))
 		}
 	}
 }
