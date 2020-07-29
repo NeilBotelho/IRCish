@@ -11,7 +11,7 @@ to join the roomwith name __roomName__. Roon names must contain only lowercase l
 to change how you are identified. Usernames can contain any case letters, numbers and must be between 2 and 10 characters long
 - __/clear__
 clear all messages in current room
-- /help
+- __/help__
 prints a list of available commands
 
 
