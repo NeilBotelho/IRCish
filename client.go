@@ -69,8 +69,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("Socket closed",err)
 			return
 		}
-		// Set initial ReadDeadline
-		conn.SetReadDeadline(time.Now().Add(time.Second * pingTimeout))
 		err = json.Unmarshal(clientMsg, &msg)
 		if err != nil {
 			fmt.Println("Error unmarshalling")
@@ -81,6 +79,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 func resolveRequest(client *Client, msg Msg) {
+	// Set initial ReadDeadline
+	client.conn.SetReadDeadline(time.Now().Add(time.Second * pingTimeout))
 	msg.client=client
 	switch *msg.OpCode {
 		case communicate:
@@ -115,11 +115,11 @@ func resolveRequest(client *Client, msg Msg) {
 }
 
 func clientWriter(cli *Client) {
-	pinger:=time.Tick(+(time.Second*pingTimeout-4))
+	pinger:=time.NewTicker(+(time.Second*pingTimeout/2))
 	for {
 		select {
 		case <-*cli.terminate:
-			close(pinger)
+			pinger.Stop()
 			return
 		case msg := <-*cli.writeCh:
 			out, err := json.Marshal(msg)
@@ -127,7 +127,7 @@ func clientWriter(cli *Client) {
 				continue
 			}
 			cli.conn.WriteMessage(websocket.TextMessage, out)
-		case <-pinger:
+		case <-pinger.C:
 			cli.conn.WriteMessage(websocket.TextMessage,[]byte(`{"opcode":4}`))
 		}
 	}
