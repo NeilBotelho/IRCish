@@ -2,42 +2,61 @@ body,html{
 	height: 100%;
 	padding:0;
 	padding:0;
-	background-color:#c9ced3;
+	margin:0;
+	background-color:#ffffff;
 }
 #header{
- 	text-align:center;
- 	font-family: monospace;
+ 	background-color:#f4500c;
+ 	width:100%;
+ 	height:20vh;
+ 	color:#ffffff;
+ 	margin-top:0;
+ 	display: flex;
+ 	align-items: center;
+ 	justify-content: center;
+}
+#header-text{
  	font-size:3vw;
+ 	text-align: center;
+ 	font-family: "sans serif";
+	margin:0;
+	padding:0;
+	line-height: 0.1rem;
+}
+#subtitle{
+	margin: 0;
+	font-size:1.2vw;
 }
 #chat-client{
 	display:flex;
 	height:75vh;
+	padding:1.3rem;
 }
 #room-list{
 	width:30%;
-	background-color: #1783ef;
+	background-color: #DEDDED;
 	padding:0;
+	box-shadow:1px 1px 2px 1px;
 }
 .room-name{
 	text-align: center;
 	padding:1rem;
 	margin: 2px;
 	font-size:2rem;
+	border:1.5px solid black;
 	background-color: white;
-	box-shadow:1px 2px 3px 1px;
+	/*box-shadow:1px 2px 3px 1px;*/
 	/*color:white;*/
 }
 .room-name:hover{
-	transform: scale(1.01);
+	transform: scale(1.04);
 }
 .new-messages{
 	color:red;
 }
 
 .active-room{
-	border-color:white;
-	border-style: inset;
-	background-color: blue;
+	background-color: #1595d6;
 	color:white;
 }
 #current-room{
@@ -52,12 +71,11 @@ body,html{
 
 
 #message-feed{
-	--message-box-width:87%;
-	background-color: white;
-	box-shadow:1px 2px 3px 1px;
-	width:var(--message-box-width);
+	background-color: #ebebeb;
+	box-shadow:2px 2px 5px 1px;
+	width:87%;
 	height: 90%;
-	overflow :scroll;
+	overflow-y :scroll;
 	position: relative;
 }
 .message-display{
@@ -70,14 +88,16 @@ body,html{
 }
 #input-div{
 	margin-top:2rem;
+	width:40%;
 }
 #input-field{
 	width:97%;
 	padding:0.4rem;
 	font-size:1rem;
-	border-width: 3px;
-	border-style: inset;
-	border-color: #1287cc;
+	border: 1.5px solid black;
+	background-color: #DEDDED;
+	/*border-color: #2d302f;*/
+	/*border-radius:25px;*/
 }
 
 .system-notification{
@@ -85,19 +105,33 @@ body,html{
 }
 
 @media (max-width:600px){
-	#header{
-		font-size:5vw;
+	#header-text{
+		font-size:8vw;
+	}
+	#subtitle{
+		font-size:3vw;
+	}
+	#chat-client{
+		padding-right: 0;
 	}
 	#message-feed{
 		font-family:Helvetica;
 		font-size:5vw;
 		height:80vh;
+		width:90%; 
+	}
+	#room-list{
+		height:90%;
 	}
 	.room-name{
 		font-size:1rem;
+		padding:0.5rem;
+		border-width: 1px
 	}
 	#input-field{
 		width:95%;
+		border: 1px solid black;
+		border-radius:25px;
 	}
 
 }
