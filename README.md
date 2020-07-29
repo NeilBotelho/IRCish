@@ -17,7 +17,7 @@ prints a list of available commands
 
 ## How can I try it?
 At the time of writing this(Jul 29 2020 8:55PM) there is a live version of with all the current features at https://ircish.herokuapp.com/
-
+![screenshot of frontend](./screenshots/frontend-Jul-29-2020.png)
 
 
 ## Running Locally
