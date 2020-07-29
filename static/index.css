@@ -34,9 +34,9 @@ body,html{
 }
 #room-list{
 	width:30%;
-	background-color: #DEDDED;
+	/*background-color: #DEDDED;*/
 	padding:0;
-	box-shadow:1px 1px 2px 1px;
+	/*box-shadow:1px 1px 2px 1px;*/
 }
 .room-name{
 	text-align: center;
@@ -45,7 +45,6 @@ body,html{
 	font-size:2rem;
 	border:1.5px solid black;
 	background-color: white;
-	/*box-shadow:1px 2px 3px 1px;*/
 	/*color:white;*/
 }
 .room-name:hover{
@@ -58,15 +57,14 @@ body,html{
 .active-room{
 	background-color: #1595d6;
 	color:white;
+	border:1.5px solid black;
 }
 #current-room{
 	width:100%;
 	height:100%;
 	display: flex;
 	flex-direction: column;
-	/*justify-content: center;*/
 	align-items: center;
-	/*color:white;*/
 }
 
 
