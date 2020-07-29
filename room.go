@@ -1,5 +1,5 @@
 package main
-// import "fmt"
+import "fmt"
 
 const (
 	// Channel Buffer Size constants (never changed)
@@ -18,6 +18,7 @@ var (
 	ping        uint8 = 4
 	leaveAll    uint8 = 5
 	notify		uint8 = 6
+	notifyAll	uint8 = 7
 	defaultRoom string = "general"
 
 	//Communication Channel
@@ -42,7 +43,17 @@ func broadcaster() {
 	for {
 		select {
 		case msg := <-messaging:
-			if RoomList[msg.Room] != nil {
+			if msg.OpCode==&notifyAll{
+				fmt.Println("notifyAll",msg.Content,msg.client)
+				msg.OpCode=&notify
+				for roomName, _ := range RoomList {
+					if(RoomList[roomName][msg.client]){
+						for cli, _ := range RoomList[roomName] {
+							*cli.writeCh <- msg
+						}
+					}
+				}
+			}else if RoomList[msg.Room] != nil{
 				for cli, _ := range RoomList[msg.Room] {
 					*cli.writeCh <- msg
 				}
@@ -55,6 +66,7 @@ func broadcaster() {
 
 		case msg := <-leaving:
 			if *msg.OpCode == leaveAll {
+				// remove client from all rooms and notify room members
 				msg.OpCode=&notify
 				for roomName, _ := range RoomList {
 					if(RoomList[roomName][msg.client]){

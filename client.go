@@ -102,8 +102,9 @@ func resolveRequest(client *Client, msg Msg) {
 			log.Println("identify")
 			if usernameValidate(msg.Content) {
 				messaging <- Msg{
-					OpCode:  &notify,
+					OpCode:  &notifyAll,
 					Content: client.identity + " --> " + msg.Content,
+					client: client,
 				}
 				client.identity = msg.Content
 		}
