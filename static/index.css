@@ -25,6 +25,20 @@ body,html{
 	font-size:2rem;
 	background-color: white;
 	box-shadow:1px 2px 3px 1px;
+	/*color:white;*/
+}
+.room-name:hover{
+	transform: scale(1.01);
+}
+.new-messages{
+	color:red;
+}
+
+.active-room{
+	border-color:white;
+	border-style: inset;
+	background-color: blue;
+	color:white;
 }
 #current-room{
 	width:100%;
@@ -33,7 +47,10 @@ body,html{
 	flex-direction: column;
 	/*justify-content: center;*/
 	align-items: center;
+	/*color:white;*/
 }
+
+
 #message-feed{
 	--message-box-width:87%;
 	background-color: white;
