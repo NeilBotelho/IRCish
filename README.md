@@ -23,6 +23,6 @@ At the time of writing this(Jul 29 2020 8:55PM) there is a live version of with 
 ## Running Locally
 1. Clone this repository
 2. Run ``` go build && ./server``` in the top level of this repository
-3. Open the localhost:8000 file in your browser 
+3. Open localhost:8000 in your browser 
 
 and voila you have the IRCish server running locally and every new tab or window that you open to the index.html file is a new client to the server and you can send messages between them
