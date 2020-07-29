@@ -39,8 +39,26 @@ The plan is to use gorilla/websocket for websockets.
 - Identify logic implemented server side
 
 **TODO**
-- Complete client side logic for:
-	- Sending and recieving messages
-	- Changing identity
-	- leaving and joining rooms
-	- switching rooms (will take a while)
+- ~Complete client side logic for:~
+	- ~Sending and recieving messages~
+	- ~Changing identity~
+	- ~leaving and joining rooms~
+	- ~switching rooms (will take a while)~
+
+### 29 Jul 2020
+(I was sick for the past week and half hence the slow progress)
+- Ping logic implemented(server and client) and read timeouts enabled
+	With ping logic implemented, on mobile even if the user moves to another app(without purging browser cache or closing the tab) the connection remains alive and there is no need to reload.
+- Client side logic updated to handle multiple rooms
+- Client side UI updated to handle multiple rooms
+- Client side logic updated to handle /identify and /clear commands
+- Client side UI refreshed to look better
+- Client side UI updated to notify when a room has new messages
+
+----
+## Note
+At this point this project is essentially complete. All initial goals have been achieved. But along the way I thought of a few improvements that could be made. I may or may not implement these moving forward, they will not be a priority.
+
+**Possible Improvements**
+1. Enable reconnect when connection is lost
+	Instead of a user having to reload when for some reason he/she disconnects from the server(eg. internet loss) the user can issue a ```/reconnect``` command and be reconnected, keeping all their past messages. This requires the client to tell the server the users identity as well as the rooms the client was connected to previously without the server re-announcing its entry. This would require one or more new entries in Msg and a new opcode  
