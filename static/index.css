@@ -61,7 +61,8 @@ body,html{
 	position: relative;
 }
 .message-display{
-	padding-left:0.6rem;
+	padding-left:1rem;
+	padding-top:1rem;
 	font-size:1.2rem;
 	height: 100%;
 	position: absolute;
@@ -81,7 +82,6 @@ body,html{
 
 .system-notification{
 	color:red;
-	font-weight: bold;
 }
 
 @media (max-width:600px){

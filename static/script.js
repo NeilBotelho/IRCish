@@ -60,22 +60,23 @@ function getRoomFromId(roomId){return roomId.split("-")[0]}
 function updateMessages(newline,roomName=null,classes=[]){
 	// create new message in the room's messages
 	if(roomName==null){
-		messages=document.getElementById(currentRoom.id)
+		messages=document.getElementById(getRoomFromId(currentMessages.id)+"-messages")
 	}
 	else{
+		console.log("updating ",roomName)
 		messages=document.getElementById(roomName+"-messages")
 	}
 	var newcontent = document.createElement('p');
 	newcontent.innerText = newline+"\n";
-	console.log("newConetne ",newline)
 	//Push to end
 	while (newcontent.firstChild) {
 		   messages.appendChild(newcontent.firstChild);
 	}
 	// add classes
-	for(var c in classes){
-		newcontent.classList.add(c)
-	}
+	classes.forEach((className)=>{
+		newcontent.classList.add(className)
+	})
+
 	// Scroll to bottom
 	messageFeed.scrollTop = messageFeed.scrollHeight;
 }
@@ -112,9 +113,6 @@ function sendMessage(e){
 }
 
 
-function recieveMessage(content,room){
-	updateMessages(content,roomName=room)
-}
 
 // Websockets implementation
 // Check if websockets are supported 
@@ -136,7 +134,12 @@ ws.onmessage=function(event){
 	console.log(reply)
 	switch(reply.opcode){
 		case 0:
-		updateMessages(reply.from+": "+reply.content,reply.room)
+		content=reply.from+": "+reply.content
+		updateMessages(content,reply.room)
+		console.log("Recieved ",reply)
+		break
+		case 6:
+		updateMessages(reply.content,roomName=null,classes=['system-notification'])
 	} 
 	// console.log(event.data)
 	// updateMessages(event.data,['system-notification'])
