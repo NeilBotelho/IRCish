@@ -165,6 +165,9 @@ ws.onmessage=function(event){
 		updateMessages(content,reply.room)
 		console.log("Recieved ",reply)
 		break
+		case 4:
+		ws.send(JSON.stringify({"opcode":4}))
+		break
 		case 6:
 		updateMessages("System: "+reply.content,roomName=null,classes=['system-notification'])
 		break
