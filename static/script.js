@@ -64,7 +64,6 @@ function updateMessages(newline,roomName=null,classes=[]){
 		messages=document.getElementById(getRoomFromId(currentMessages.id)+"-messages")
 	}
 	else{
-		console.log("updating ",roomName)
 		messages=document.getElementById(roomName+"-messages")
 	}
 	var newcontent = document.createElement('p');
@@ -105,7 +104,6 @@ function sendMessage(e){
 		return
 	}
 	if(msg=="/help"){
-		console.log(help)
 		updateMessages(help,roomName=null,classes=['system-notification'])
 		inputField.value=""
 		return
@@ -130,7 +128,6 @@ function sendMessage(e){
 	}
 	
 	// send message over socket
-	console.log("setn")
 	ws.send(JSON.stringify({"opcode":0,"content":e.target.value,"room":room}))
 	inputField.value=""
 }
@@ -148,9 +145,9 @@ ws = new WebSocket("ws://localhost:8000/ws");
 ws.onerror=function(event){
 	displayError()
 }
-ws.onopen=function(event){
-	console.log("connected to server")
-}
+// ws.onopen=function(event){
+	// console.log("connected to server")
+// }
 ws.onmessage=function(event){
 	// console.log(event.data)
 	reply=JSON.parse(event.data)
@@ -169,7 +166,7 @@ ws.onmessage=function(event){
 	} 
 }
 function displayError(){
-	console.log("Error connecting to server")
+	alert("Error connecting to server")
 }
 
 
