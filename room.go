@@ -49,6 +49,7 @@ func broadcaster() {
 				for roomName, _ := range RoomList {
 					if(RoomList[roomName][msg.client]){
 						for cli, _ := range RoomList[roomName] {
+							msg.Room=roomName
 							*cli.writeCh <- msg
 						}
 					}
