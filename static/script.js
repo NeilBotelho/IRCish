@@ -1,16 +1,18 @@
-identified=false//check if we've identified with server only then allow sendmessage
-roomRegex=RegExp('[a-z\-]{3,10}')
-//Front end implementation
-var roomsList=[]
+//FRONT END IMPLEMENTATION
+
+validRoomName=RegExp('[a-z0-9\-]{2,10}')
+validUsername=RegExp('[a-zA-z0-9\-]{2,10}')
+var roomsList=[] //List of joined rooms
 //Outer div for all  rooms messages
 var messageFeed=document.getElementById('message-feed')//used for scrolling to the top
 var inputField=document.getElementById('input-field')//used for clearing input field
 var currentMessages
 var currentRoom
-var help="AVAILABLE COMMANDS:\n"+
-"/join channelName : to join a channel(name must contain only lowercase letters and underscores and must begin with a letter)\n"
+var help="AVAILABLE COMMANDS:\n\n"+
+"/join channelName : to join a channel(name must contain only lowercase letters, numbers and underscores. Room names must be between 2 and 10 characters long)\n\n"+
+"/identify username : to change how you are identified to 'username'. Usernames can contain any case letters, numbers and underscores. Usernames must be between  2 and 10 characters long. Usernames are not unique\n"
 
-
+function getRoomFromId(roomId){return roomId.split("-")[0]}
 
 function createRoom(roomName){
 	if(roomsList.indexOf(roomName)!=-1){
@@ -55,7 +57,6 @@ function roomSwitch(roomId){
 
 }
 
-function getRoomFromId(roomId){return roomId.split("-")[0]}
 
 function updateMessages(newline,roomName=null,classes=[]){
 	// create new message in the room's messages
@@ -82,33 +83,55 @@ function updateMessages(newline,roomName=null,classes=[]){
 }
 
 function sendMessage(e){
+	// if(ws.readyState != WebSocket.OPEN){
+	// 	updateMessages("Not connected to server")
+	// 	inputField.value=""
+	// 	return
+	// }
 	// send message to server
 	let msg=e.target.value.trim()
 	let room=getRoomFromId(currentRoom.id)
 	if(msg.substring(0,5)=="/join"){
 		tokens=msg.split(" ")
-		if (tokens.length==2 && roomRegex.test(tokens[1])){
+		if (tokens.length==2 && validRoomName.test(tokens[1])){
 			// Is a legitamate roomName
-			ws.send(JSON.stringify({"opCode":1,"room":tokens[1]}))
+			ws.send(JSON.stringify({"opcode":1,"room":tokens[1]}))
 			createRoom(tokens[1])
-			inputField.value=""
-			return
 		}
+		else{
+			updateMessages("Invalid room name")
+		}
+		inputField.value=""
+		return
 	}
 	if(msg=="/help"){
-		updateMessages(help,['system-notification'])
+		console.log(help)
+		updateMessages(help,roomName=null,classes=['system-notification'])
 		inputField.value=""
 		return
 	}
 	
+	if(msg.substring(0,9)=="/identify"){
+		tokens=msg.split(" ")
+		if(tokens.length==2 && validUsername.test(tokens[1]) && tokens[1]!="System"){
+			ws.send(JSON.stringify({"opcode":3,"content":tokens[1]}))
+		}
+		else{
+			updateMessages("Invalid username")
+		}
+		inputField.value=""
+		return
+
+	}
+	if(msg.substring(0,1)=="/"){
+		updateMessages("System: Messages cannot start with a '/' only commands can. Use /help for al ist of available commands")
+		inputField.value=""
+		return
+	}
 	
-	if(ws.readyState != WebSocket.OPEN){
-		updateMessages("Not connected to server")
-	}
-	else{
-		// send message over socket
-		ws.send(JSON.stringify({"opCode":0,"content":e.target.value,"room":room}))
-	}
+	// send message over socket
+	console.log("setn")
+	ws.send(JSON.stringify({"opcode":0,"content":e.target.value,"room":room}))
 	inputField.value=""
 }
 
@@ -131,7 +154,7 @@ ws.onopen=function(event){
 ws.onmessage=function(event){
 	// console.log(event.data)
 	reply=JSON.parse(event.data)
-	console.log(reply)
+	// console.log(reply)
 	switch(reply.opcode){
 		case 0:
 		content=reply.from+": "+reply.content
@@ -139,22 +162,25 @@ ws.onmessage=function(event){
 		console.log("Recieved ",reply)
 		break
 		case 6:
-		updateMessages(reply.content,roomName=null,classes=['system-notification'])
+		updateMessages("System: "+reply.content,roomName=null,classes=['system-notification'])
+		break
+		default:
+		console.log("No handle case",reply)
 	} 
-	// console.log(event.data)
-	// updateMessages(event.data,['system-notification'])
 }
 function displayError(){
 	console.log("Error connecting to server")
 }
 
 
+//  MAIN 
+
 // Register input field onchange function
 inputField.onchange=sendMessage
 
+//Create general room and set it to current Room
 createRoom("general")
 currentMessages=document.getElementById('general-messages')
 currentRoom=document.getElementById('general-room')
 roomSwitch("general")
 
-console.log(currentMessages.id)
