@@ -27,10 +27,10 @@ The plan is to use gorilla/websocket for websockets.
 
 **TODO**
 
-- ~Break the wsHandler function into smaller function(its getting a bit long and unwieldly)~
-- ~implement identify logic~
-- implement ping logic and enable read timeouts on sockets
-- Update client side logic and UI to handle json and multiple rooms(will probably take me the longest)
+- ~~Break the wsHandler function into smaller function(its getting a bit long and unwieldly)~~
+- ~~implement identify logic~~
+- ~~implement ping logic and enable read timeouts on sockets~~
+- ~~Update client side logic and UI to handle json and multiple rooms(will probably take me the longest)~~
   
 #### 26 Jul 2020
 - Client UI completed. Took a while, not very good at frontend. 
@@ -39,11 +39,11 @@ The plan is to use gorilla/websocket for websockets.
 - Identify logic implemented server side
 
 **TODO**
-- ~Complete client side logic for:~
-	- ~Sending and recieving messages~
-	- ~Changing identity~
-	- ~leaving and joining rooms~
-	- ~switching rooms (will take a while)~
+- ~~Complete client side logic for:~~
+	- ~~Sending and recieving messages~~
+	- ~~Changing identity~~
+	- ~~leaving and joining rooms~~
+	- ~~switching rooms (will take a while)~~
 
 ### 29 Jul 2020
 (I was sick for the past week and half hence the slow progress)
@@ -61,4 +61,5 @@ At this point this project is essentially complete. All initial goals have been 
 
 **Possible Improvements**
 1. Enable reconnect when connection is lost
+
 	Instead of a user having to reload when for some reason he/she disconnects from the server(eg. internet loss) the user can issue a ```/reconnect``` command and be reconnected, keeping all their past messages. This requires the client to tell the server the users identity as well as the rooms the client was connected to previously without the server re-announcing its entry. This would require one or more new entries in Msg and a new opcode  
