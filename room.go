@@ -73,6 +73,7 @@ func broadcaster() {
 					if(RoomList[roomName][msg.client]){
 						delete(RoomList[roomName], msg.client)
 						for cli, _ := range RoomList[roomName] {
+							msg.Room=roomName
 							*cli.writeCh <- msg
 						}
 					}
