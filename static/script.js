@@ -11,6 +11,7 @@ var currentRoom
 var help="AVAILABLE COMMANDS:\n\n"+
 "/join channelName : to join a room. Room names must contain only lowercase letters, numbers and underscores. Room names must be between 2 and 10 characters long)\n\n"+
 "/identify username : to change how you are identified to 'username'. Usernames can contain any case letters, numbers and underscores. Usernames must be between  2 and 10 characters long. Usernames are not unique\n\n"+
+"/leave : leaves the current room. Removes all messages"
 "/clear : clears all messages from current room"
 
 function getRoomFromId(roomId){return roomId.split("-")[0]}
@@ -44,6 +45,22 @@ function createRoom(roomName){
 	roomsList.push(roomName)
 }
 
+function deleteRoom(roomName){
+	roomsList.splice(roomsList.indexOf(roomName),1)		
+	if(roomsList.indexOf('general')==-1){
+		roomSwitch(roomsList[0])
+	}
+	else{
+		roomSwitch('general')
+	}
+	roomButton=document.getElementById(roomName+"-room")
+	roomBody=document.getElementById(roomName+"-messages")
+	roomtray=document.getElementById("room-list")
+
+	roomtray.removeChild(roomButton)
+	messageFeed.removeChild(roomBody)
+
+}
 function roomSwitch(roomId){
 	roomName=getRoomFromId(roomId)//from roomId to roomName
 
@@ -55,7 +72,6 @@ function roomSwitch(roomId){
 	currentRoom=document.getElementById(roomName+"-room")
 	currentRoom.classList.remove("new-messages")
 	currentRoom.classList.add("active-room")
-
 }
 
 
@@ -100,6 +116,7 @@ function sendMessage(e){
 			// Is a legitamate roomName
 			ws.send(JSON.stringify({"opcode":1,"room":tokens[1]}))
 			createRoom(tokens[1])
+			roomSwitch(tokens[1]+"-room")
 		}
 		else{
 			updateMessages("Invalid room name")
@@ -127,6 +144,13 @@ function sendMessage(e){
 	}
 	if(msg=="/clear"){
 		currentMessages.innerText=""
+		inputField.value=""
+		return
+	}
+	if(msg=="/leave"){
+		currRoomName=getRoomFromId(currentRoom.id)
+		ws.send(JSON.stringify({"opcode":2,"room":getRoomFromId(currentRoom.id)}))
+		deleteRoom(currRoomName)
 		inputField.value=""
 		return
 	}
@@ -200,4 +224,5 @@ createRoom("general")
 currentMessages=document.getElementById('general-messages')
 currentRoom=document.getElementById('general-room')
 roomSwitch("general")
+
 

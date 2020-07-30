@@ -9,6 +9,8 @@ Current Progress can be found in PROGRESS.md
 to join the roomwith name __roomName__. Roon names must contain only lowercase letters, numbers and underscores. Room names must be between 2 and 10 characters long
 - __/identify__ _username_
 to change how you are identified. Usernames can contain any case letters, numbers and must be between 2 and 10 characters long
+- __/leave__
+leaves the current room. Removes all messages
 - __/clear__
 clear all messages in current room
 - __/help__
