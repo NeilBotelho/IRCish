@@ -21,8 +21,10 @@ type Client struct {
 	conn      *websocket.Conn  // websocket connection with client
 }
 
+
 func clientCreator(w http.ResponseWriter, r *http.Request) {
-/*Create Client object and announce client entering.*/
+/*Create Client object and announce client entering.
+Runs clientHandler in a goroutine and exits*/
 
 	// Upgrade http to websocket
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -146,8 +148,8 @@ func resolveRequest(client *Client, msg Msg) {
 
 
 func clientWriter(cli *Client) {
-/*Used to send messages to client and 
-to ping client periodically(to prevent ReadDeadlline from closing active clients)*/
+/*Recieves messages from cli.writeCh and send to client.  
+Pings client periodically to prevent ReadDeadlline from closing active clients*/
 
 	// Create a recieve channel that recieves a value every pingTimeout/2 seconds
 	pinger:=time.NewTicker(+(time.Second*pingTimeout/2))
