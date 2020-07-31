@@ -5,7 +5,7 @@ const (
 	clientMsgBuff uint8 = 1
 	chanBuff      uint8 = 1
 	// Ping timeout
-	pingTimeout = 15 //seconds
+	pingTimeout = 25 //seconds
 )
 
 

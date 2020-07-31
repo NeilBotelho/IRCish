@@ -151,10 +151,10 @@ func resolveRequest(client *Client, msg Msg) {
 
 func clientWriter(cli *Client) {
 	/*Recieves messages from cli.writeCh and send to client.
-	  Pings client periodically to prevent ReadDeadlline from closing active clients*/
+	  Pings client periodically to prevent ReadDeadline from closing active clients*/
 
-	// Create a recieve channel that recieves a value every pingTimeout/2 seconds
-	pinger := time.NewTicker(+(time.Second * pingTimeout / 2))
+	// Create a recieve channel that recieves a value every pingTimeout*0.7 seconds
+	pinger := time.NewTicker(+(time.Second * pingTimeout * 7 / 10))
 	for {
 		select {
 		case <-*cli.terminate:
