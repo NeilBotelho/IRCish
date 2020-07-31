@@ -42,7 +42,7 @@ func clientCreator(w http.ResponseWriter, r *http.Request) {
 		writeCh:   &writeCh,
 		terminate: &terminate,
 		conn:      conn,
-		identity:  strconv.Itoa(RandInt()), //Random Integer
+		identity:  strconv.Itoa(randIdentity()), //Random Integer
 	}
 
 	//Announce creation of client to broadcaster
@@ -193,7 +193,7 @@ func closeClient(client *Client) {
 	close(*client.terminate)
 }
 
-func RandInt() int {
+func randIdentity() int {
 	/*Generate a random 5 digit number*/
 
 	return rand.Intn(89999) + 10000
