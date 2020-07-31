@@ -1,9 +1,5 @@
 
 # Design Doc
-**Note:**
-This document is currently outdated. I am working on updating it to reflect the current state of the project
-
-This isn't  a document of what has been implemented it is a guide for what I want to be implemented
 
 ## Functionality
 1. User can join any room(room must have [a-z\-]{3,10} name) using ```/join roomName``` command
