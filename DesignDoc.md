@@ -2,7 +2,7 @@
 # Design Doc
 **Note:**
 This document is currently outdated. I am working on updating it to reflect the current state of the project
-----
+
 This isn't  a document of what has been implemented it is a guide for what I want to be implemented
 
 ## Functionality
