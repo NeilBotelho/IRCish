@@ -43,7 +43,7 @@ func main() {
     r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 	
 	// Routes 
-	r.HandleFunc("/ircish", clientHandler)
+	r.HandleFunc("/ircish", clientCreator)
 	r.HandleFunc("/", HomeHandler)
 
 	go broadcaster()

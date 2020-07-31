@@ -21,7 +21,7 @@ type Client struct {
 	conn      *websocket.Conn  // websocket connection with client
 }
 
-func clientHandler(w http.ResponseWriter, r *http.Request) {
+func clientCreator(w http.ResponseWriter, r *http.Request) {
 /*Create Client object and announce client entering.
 Listens for incoming messages from clients and handles them*/
 
