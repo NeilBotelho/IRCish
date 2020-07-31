@@ -152,6 +152,7 @@ function sendMessage(e){
 	}
 	if(msg=="/leave"){
 		currRoomName=getRoomFromId(currentRoom.id)
+		console.log(currRoomName)
 		ws.send(JSON.stringify({"opcode":2,"room":getRoomFromId(currentRoom.id)}))
 		deleteRoom(currRoomName)
 		inputField.value=""
