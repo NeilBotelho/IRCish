@@ -175,7 +175,7 @@ if(!(window.WebSocket)){
 }
 
 // Create websocket and register handlers
-ws = new WebSocket("ws://localhost:8000/ws");
+ws = new WebSocket("ws://localhost:8000/ircish"); // Should be changed to wss:// in production 
 ws.onerror=function(event){
 	displayError()
 }
