@@ -19,7 +19,7 @@ type Client struct {
 	conn      *websocket.Conn
 }
 
-func wsHandler(w http.ResponseWriter, r *http.Request) {
+func clientHandler(w http.ResponseWriter, r *http.Request) {
 	// Upgrade http to websocket
 	
 	conn, err := upgrader.Upgrade(w, r, nil)
