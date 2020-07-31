@@ -48,7 +48,9 @@ function createRoom(roomName){
 function deleteRoom(roomName){
 	roomsList.splice(roomsList.indexOf(roomName),1)		
 	if(roomsList.indexOf('general')==-1){
-		roomSwitch(roomsList[0])
+		if(roomsList.length!=0){
+			roomSwitch(roomsList[0])
+		}
 	}
 	else{
 		roomSwitch('general')
@@ -63,12 +65,13 @@ function deleteRoom(roomName){
 }
 function roomSwitch(roomId){
 	roomName=getRoomFromId(roomId)//from roomId to roomName
-
+	if(currentMessages!=undefined){
 	currentMessages.setAttribute("style","display:none")
+	currentRoom.classList.remove("active-room")
+	}
 	currentMessages=document.getElementById(roomName+"-messages")
 	currentMessages.setAttribute("style","display:block")
 	
-	currentRoom.classList.remove("active-room")
 	currentRoom=document.getElementById(roomName+"-room")
 	currentRoom.classList.remove("new-messages")
 	currentRoom.classList.add("active-room")
@@ -149,6 +152,7 @@ function sendMessage(e){
 	}
 	if(msg=="/leave"){
 		currRoomName=getRoomFromId(currentRoom.id)
+		console.log(currRoomName)
 		ws.send(JSON.stringify({"opcode":2,"room":getRoomFromId(currentRoom.id)}))
 		deleteRoom(currRoomName)
 		inputField.value=""
@@ -218,11 +222,8 @@ function displayError(){
 
 // Register input field onchange function
 inputField.onchange=sendMessage
-
 //Create general room and set it to current Room
 createRoom("general")
 currentMessages=document.getElementById('general-messages')
 currentRoom=document.getElementById('general-room')
 roomSwitch("general")
-
-
