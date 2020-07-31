@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -12,8 +11,9 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// Represents a client and contains all
-// information needed to send and recieve messages to/from client
+// Represents a client
+// contains all information needed to 
+// send and recieve messages to/from client
 type Client struct {
 	identity  string       	  
 	writeCh   *chan Msg        // send recieve message from broadcaster
@@ -22,8 +22,7 @@ type Client struct {
 }
 
 func clientCreator(w http.ResponseWriter, r *http.Request) {
-/*Create Client object and announce client entering.
-Listens for incoming messages from clients and handles them*/
+/*Create Client object and announce client entering.*/
 
 	// Upgrade http to websocket
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -44,8 +43,6 @@ Listens for incoming messages from clients and handles them*/
 		identity:  strconv.Itoa(RandInt()), //Random Integer
 	}
 
-	// Register client writer in a go routine
-	go clientWriter(&client)
 
 	//Announce creation of client to broadcaster
 	msg := Msg{
@@ -58,35 +55,40 @@ Listens for incoming messages from clients and handles them*/
 
 	// Add client to defaultRoom
 	entering <- msg
+	go clientHandler(&client)
+}
 
+func clientHandler(client *Client){
+/*Listens for incoming messages from clients and handles them*/
+
+	// Register client writer in a go routine
+	go clientWriter(client)
+
+	var msg Msg
 	for {
 		//Clear previous contents of msg
 		msg=Msg{}
 		
 		// Wait for client message(sleeps if no message) 
+		// ReadDeadline set in resolveRequest
 		_, clientMsg, err := client.conn.ReadMessage()
+		
 		if err != nil {
-			// Close connection in case of error
-			leaving <- Msg{
-				OpCode: &leaveAll,
-				client: &client,
-				Content:client.identity+" Just left",
-			}
-			*client.terminate <- struct{}{} //Send terminate signal
-			// Close any open channels(to prevent memory leak)
-			close(*client.writeCh)
-			close(*client.terminate)
+			// Close connection in case read of error
+			closeClient(client)
 			log.Println("Socket closed",err)
 			return
 		}
+
 		// Unpack JSON message from client into msg struct 
 		err = json.Unmarshal(clientMsg, &msg)
 		if err != nil {
-			fmt.Println("Error unmarshalling")
+			log.Println("Error unmarshalling")
 			continue
 		}
+
 		// Reolve client request depending on opcode
-		resolveRequest(&client,msg)
+		resolveRequest(client,msg)
 	}
 
 }
@@ -142,6 +144,7 @@ func resolveRequest(client *Client, msg Msg) {
 	}
 }
 
+
 func clientWriter(cli *Client) {
 /*Used to send messages to client and 
 to ping client periodically(to prevent ReadDeadlline from closing active clients)*/
@@ -168,14 +171,36 @@ to ping client periodically(to prevent ReadDeadlline from closing active clients
 	}
 }
 
+
+func closeClient(client *Client){
+/* Annouces client departure in all rooms client joined and 
+closes any open channels or goroutines*/
+
+	leaving <- Msg{
+		OpCode: &leaveAll,
+		client: client,
+		Content:client.identity+" Just left",
+	}
+
+	//Send terminate signal(closes client writer)
+	*client.terminate <- struct{}{} 
+	
+	// Close any open channels(to prevent memory leak)
+	close(*client.writeCh)
+	close(*client.terminate)
+}
+
+
 func RandInt() int {
 /*Generate a random 5 digit number*/
+
 	return rand.Intn(89999) + 10000
 }
 
 
 func usernameValidate(username string) bool {
 /*Check if username is valid*/
+
 	var pass bool
 	var err error
 	//Check if username contains whitespace
