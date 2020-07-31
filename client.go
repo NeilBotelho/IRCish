@@ -150,7 +150,7 @@ func resolveRequest(client *Client, msg Msg) {
 }
 
 func clientWriter(cli *Client) {
-	/*Recieves messages from cli.writeCh and send to client.
+	/*Recieves messages from cli.writeCh and sends to client.
 	  Pings client periodically to prevent ReadDeadline from closing active clients*/
 
 	// Create a recieve channel that recieves a value every pingTimeout*0.7 seconds

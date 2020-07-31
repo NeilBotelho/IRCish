@@ -4,8 +4,8 @@
 ## Functionality
 1. User can join any room(room must have [a-z\-]{3,10} name) using ```/join roomName``` command
 1. User can leave any room(room must have [a-z\-]{3,10} name) using ```/leave roomName``` command
-1. User can send and recieve message to any room he/she joined
-1. User can clear messages in current room using the ```/clear``` command
+1. User can send and receive messages to any room he/she joined
+1. User can clear messages in the current room using the ```/clear``` command
 1. User can change how he/she is identified using the ```/identify``` command
 
 
@@ -58,7 +58,7 @@
 	```
 
 ## Global Variables(never modified)
-We use variables here instead of constants as we want use the address of the following
+We use variables here instead of constants as we want to use the address of the following
 1. Operation Codes(type is uint8)
 	- communicate uint8 = 0
 	- join        uint8 = 1
@@ -92,10 +92,10 @@ Create Client object and announce client entering. Runs clientHandler in a gorou
 **Performs:**
 - Upgrades connection to websocket
 - Creates client struct
-- Cets user identity to random 5 digit number
+- Sets user identity to random 5 digit number
 - Announces creation of client through messaging channel
 - Adds client to defaultRoom using entering channel
-- Creates clientHandler go routine with client as function and exits
+- Creates clientHandler go routine with client as argument and exits
 
 ### -clientHandler
 Listens for incoming messages from clients and handles them
@@ -106,10 +106,10 @@ Listens for incoming messages from clients and handles them
 - clientWriter go routine
 
 **Performs:**
-- Enter infinite loop to read user messages, unmarshall the json(user response) into a Msg struct and send it to ```resolveRequest``` function
+- Enter infinite loop to read user messages, unmarshal the JSON(user response) into a Msg struct and send it to ```resolveRequest``` function
 - The read deadline for reading user messages is set by ```resolveRequest``` function
 - If read error occurs, it runs ```closeClient``` function with and argument of client and exits. 
-- If error occurs during umarshalling the incoming message is discarded and we renter the loop
+- If error occurs during umarshaling the incoming message is discarded and we renter the loop
 
 ### -resolveRequest
 
@@ -123,11 +123,11 @@ Listens for incoming messages from clients and handles them
 	1. opcode=0, it adds the user identity to the msg "From" field and sends it over the messaging channel
 	1. opcode=1, it notifies users of the room being joined, then adds the user to the room
 	1. opcode=2, it removes the user from the group, then notifies other users of the departure 
-	1. opcode=3, If specified username is valid, change user identity and notify users in rooms that the current user has joined
+	1. opcode=3, If the specified username is valid, change user identity and notify users in rooms that the current user has joined
 
 
 ### -clientWriter
-Recieves messages from cli.writeCh and send to client. Pings client periodically to prevent ReadDeadline from closing active clients. Runs as a goroutine and each Client object has one associated with it
+Receives messages from cli.writeCh and sends to client. Pings client periodically to prevent ReadDeadline from closing active clients. Runs as a goroutine and each Client object has one associated with it
 
 **Parameters:** cli \*Client
 
@@ -164,7 +164,7 @@ Check if username is valid
 
 **Performs:**
 - if username has white space it returns false
-- if username has non alphanumeric characters other than _ it returns false
+- if username has non-alphanumeric characters other than _ it returns false
 - if username is is longer than 10 characters or shorter than 2 characters it returns false
 - else it returns true
 
@@ -187,5 +187,5 @@ Only a single instance of broadcaster is created (as a goroutine) and the RoomLi
 	- Then it adds the client to the room 
 - If a value(msg) is sent on leaving:
 	1. If opcode=5(leaveAll) it checks every room for msg.client, deletes each match it finds and notifies members of rooms that contained msg.client
-	1. If opcode=2(leave) it deletes the client entry in specified room. No checking is done to see if client is in the room. 
+	1. If opcode=2(leave) it deletes the client entry in the specified room. No checking is done to see if client is in the room. 
 	1. If after the operation is complete the room is empty, the room is deleted from RoomList
