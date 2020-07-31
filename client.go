@@ -116,7 +116,7 @@ func resolveRequest(client *Client, msg Msg) {
 			log.Println("Join")
 			// Set opCode to notify and send on messaging channel
 			msg.OpCode = &notify
-			msg.Content=client.identity+" Just joined"
+			msg.Content=client.identity+" Just entered"
 			messaging <- msg
 			// Also add client to specified room by sending message on the entering channel
 			msg.OpCode= &join
