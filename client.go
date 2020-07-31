@@ -122,9 +122,13 @@ func resolveRequest(client *Client, msg Msg) {
 			msg.OpCode= &join
 			entering <- msg
 		case leave:
+			log.Println("Leaving")
 			// Send msg on leaving channel
 			leaving <- msg
-			log.Println("Leaving")
+			// Notify other users of departure
+			msg.OpCode = &notify
+			msg.Content=client.identity+" Just left"
+			messaging<-msg
 		case identify:
 			log.Println("Identify")
 			// If specified username is valid, 
