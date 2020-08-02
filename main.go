@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
-	// "html"
 	"log"
 	"net/http"
 	"os"
-	"time"
+	// "time"
 	"io/ioutil"
 	"github.com/gorilla/websocket"
 
@@ -30,14 +29,15 @@ func main() {
 		PORT = os.Args[1]
 	}
 	r := mux.NewRouter() // maybe set .StrictSlash(false)?
-	srv := &http.Server{
-		Handler: r,
-		Addr:    "127.0.0.1:" + PORT,
-		// Enforce timeouts for server
-		WriteTimeout: 10 * time.Second,
-		ReadTimeout:  10 * time.Second,
-		IdleTimeout:  15 * time.Second,
-	}
+	// Heroku Doesn't support the following hence it won't be used.
+	// srv := &http.Server{
+	// 	Handler: r,
+	// 	Addr:    "127.0.0.1:" + PORT,
+	// 	// Enforce timeouts for server
+	// 	WriteTimeout: 10 * time.Second,
+	// 	ReadTimeout:  10 * time.Second,
+	// 	IdleTimeout:  15 * time.Second,
+	// }
 	// file server for static assets
 	fs := http.FileServer(http.Dir("./static/")) 
     r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
@@ -50,7 +50,9 @@ func main() {
 
 	// Start server
 	log.Print("Server running on " + PORT)
-	log.Fatal(srv.ListenAndServe())
+	log.Fatal(http.ListenAndServe(":"+PORT,r))
+
+	// log.Fatal(srv.ListenAndServe())
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
