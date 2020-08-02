@@ -189,3 +189,6 @@ Only a single instance of broadcaster is created (as a goroutine) and the RoomLi
 	1. If opcode=5(leaveAll) it checks every room for msg.client, deletes each match it finds and notifies members of rooms that contained msg.client
 	1. If opcode=2(leave) it deletes the client entry in the specified room. No checking is done to see if client is in the room. 
 	1. If after the operation is complete the room is empty, the room is deleted from RoomList
+
+### Various message templating functions
+Can be found in the client.go module. Used to reduce clutter caused by creating and populating Msg structs in the middle of functions
