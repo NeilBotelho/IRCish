@@ -46,12 +46,7 @@ func clientCreator(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Announce creation of client to broadcaster
-	msg := Msg{
-		OpCode:  &notify,
-		Content: client.identity + " Just entered",
-		Room:    defaultRoom,
-		client:  &client,
-	}
+	msg := announceMsg(&client)
 	messaging <- msg
 
 	// Add client to defaultRoom
@@ -134,11 +129,7 @@ func resolveRequest(client *Client, msg Msg) {
 		// change user identity and
 		// notify users in rooms current user is joined
 		if usernameValidate(msg.Content) {
-			messaging <- Msg{
-				OpCode:  &notifyAll,
-				Content: client.identity + " --> " + msg.Content,
-				client:  client,
-			}
+			messaging <- identifyMsg(client,msg.Content)
 			client.identity = msg.Content
 		}
 	case ping:
@@ -179,11 +170,7 @@ func closeClient(client *Client) {
 	/* Annouces client departure in all rooms client joined and
 	   closes any open channels or goroutines*/
 
-	leaving <- Msg{
-		OpCode:  &leaveAll,
-		client:  client,
-		Content: client.identity + " Just left",
-	}
+	leaving <- leaveAllMsg(client)
 
 	//Send terminate signal(closes client writer)
 	*client.terminate <- struct{}{}
@@ -213,4 +200,31 @@ func usernameValidate(username string) bool {
 		return false
 	}
 	return true
+}
+
+
+// Message templates
+
+func announceMsg(client *Client)Msg{
+	return Msg{
+		OpCode:  &notify,
+		Content: client.identity + " Just entered",
+		Room:    defaultRoom,
+		client:  client,
+	}
+}
+func identifyMsg(client *Client, newIdentity string)Msg{
+	return  Msg{
+			OpCode:  &notifyAll,
+			Content: client.identity + " --> " + newIdentity,
+			client:  client,
+		}
+}
+
+func leaveAllMsg(client *Client)Msg{
+	return Msg{
+		OpCode:  &leaveAll,
+		client:  client,
+		Content: client.identity + " Just left",
+	}
 }
