@@ -1,0 +1,13 @@
+language: go
+go:
+- 1.14.x
+branches:
+  only:
+  - master
+deploy:
+  provider: heroku
+  api_key:
+    secure: atE3I3XM9bM+8QRR41dh57oQ+t3TIA5gwJ2Ddejs5jLEL7gr/U2z7gVOVs0OPMHg10I2jZiaRcjsXSu0p+GLkJzurGyG9eIgrtaYDhpqHUoKtl+1rNffxWWK0qDimaj3SzcGXUjAlQr5zu9vPgLiBLs1AOgQjGyc4Ek4v8eHNrh6dAuquNEO5NXYYmClrbEuHleeie05r/rTacHiEfm1MhjNjLHcC6YP3SGoTxVS3zx7vIhf8eBpu7LDgHI5fTo47NAWP+KF1bsn9Dp0U8SPc/KuRXpOeMH7CXFU4aAo85OhtX2qFRPLHNp4b59bd1OfZYN0bNceIqzhFmu79LFHZqJ0m6OqDoy1KPvvBakz7xfbfpfhAVTsL+pYZXM0BngAEme1pKBMZYkY7WdvLZm+nbeytPgpxCSvoPRmAwOsZ2C/061PWEQuKQpU0JNiUJVXsJwXz9IQDH86IX1a8sNt2RoV34DBlzVO+RmLeofo4alxR+FgphulzEOjb9BSKLCD8ppwlphhhCO98uYZvN+6kS0tdREjFgOX6s0zThLrj/zQ09Vcfp0B8ZpGNjqctc0sWw/1ZEX1HSzUYfBizebDTa3F9jhN2xGZ6ZRaanHp6uCpg7dTVUX5Pmu51ofSAyruk6UJd9qP6njF8OVB4h+XSDlkvx1cBSWjMqp8MOXIZmM=
+  skip_cleanup: true
+  app:
+    master: ircish
