@@ -1,4 +1,5 @@
 # IRCish
+[![Build Status](https://travis-ci.com/NeilBotelho/IRCish.svg?branch=master)](https://travis-ci.com/NeilBotelho/IRCish)
 
 ## What is this
 This project implements a chat server in the style of irc, where clients connect to rooms and recieve messages sent to those rooms only while connected. It is implemented using golang and websockets.
