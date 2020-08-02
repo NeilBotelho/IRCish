@@ -2,11 +2,11 @@
 # Design Doc
 
 ## Functionality
-1. User can join any room(room must have [a-z\-]{3,10} name) using ```/join roomName``` command
-1. User can leave any room(room must have [a-z\-]{3,10} name) using ```/leave roomName``` command
+1. User can join any room(roomName must satisfy [a-z0-9\\\-]{2,10} name) using ```/join roomName``` command
+1. User can leave any room using ```/leave roomName``` command
 1. User can send and receive messages to any room he/she joined
 1. User can clear messages in the current room using the ```/clear``` command
-1. User can change how he/she is identified using the ```/identify``` command
+1. User can change how he/she is identified using the ```/identify username``` command(username must satisfy '[a-zA-z0-9\\\-]{2,10}')
 
 
 
