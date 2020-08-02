@@ -179,7 +179,7 @@ if(!(window.WebSocket)){
 
 // Create websocket and register handlers
 // ws = new WebSocket("ws://localhost:8000/ircish"); // For local development
-ws = new WebSocket("wss://ircish.herokuapp.com//ircish"); // For local development
+ws = new WebSocket("wss://ircish.herokuapp.com/ircish"); // For local development
 
 ws.onerror=function(event){
 	displayError()
