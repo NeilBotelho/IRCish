@@ -13,6 +13,7 @@ import (
 )
 
 var PORT string = "8000"
+
 // Creator the upgrader(upgrades http connection to websocket connection)
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -29,18 +30,20 @@ func main() {
 		PORT = os.Args[1]
 	}
 	r := mux.NewRouter() // maybe set .StrictSlash(false)?
+	
 	// Heroku Doesn't support the following hence it won't be used.
-	// srv := &http.Server{
-	// 	Handler: r,
-	// 	Addr:    "127.0.0.1:" + PORT,
-	// 	// Enforce timeouts for server
-	// 	WriteTimeout: 10 * time.Second,
-	// 	ReadTimeout:  10 * time.Second,
-	// 	IdleTimeout:  15 * time.Second,
-	// }
+	/*srv := &http.Server{
+		Handler: r,
+		Addr:    "127.0.0.1:" + PORT,
+		// Enforce timeouts for server
+		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  10 * time.Second,
+		IdleTimeout:  15 * time.Second,
+	}*/
+
 	// file server for static assets
 	fs := http.FileServer(http.Dir("./static/")) 
-    r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 	
 	// Routes 
 	r.HandleFunc("/ircish", clientCreator)
@@ -52,11 +55,12 @@ func main() {
 	log.Print("Server running on " + PORT)
 	log.Fatal(http.ListenAndServe(":"+PORT,r))
 
+	// For when using a customised http server
 	// log.Fatal(srv.ListenAndServe())
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	//  Serves index.html
+	/*  Serves index.html */
 	p,err:=ioutil.ReadFile("./public/index.html")
 	if err!=nil{
 		log.Fatal(err)

@@ -129,7 +129,7 @@ func resolveRequest(client *Client, msg Msg) {
 		// change user identity and
 		// notify users in rooms current user is joined
 		if usernameValidate(msg.Content) {
-			messaging <- identifyMsg(client,msg.Content)
+			messaging <- identifyMsg(client, msg.Content)
 			client.identity = msg.Content
 		}
 	case ping:
@@ -202,10 +202,9 @@ func usernameValidate(username string) bool {
 	return true
 }
 
-
 // Message templates
 
-func announceMsg(client *Client)Msg{
+func announceMsg(client *Client) Msg {
 	return Msg{
 		OpCode:  &notify,
 		Content: client.identity + " Just entered",
@@ -213,15 +212,15 @@ func announceMsg(client *Client)Msg{
 		client:  client,
 	}
 }
-func identifyMsg(client *Client, newIdentity string)Msg{
-	return  Msg{
-			OpCode:  &notifyAll,
-			Content: client.identity + " --> " + newIdentity,
-			client:  client,
-		}
+func identifyMsg(client *Client, newIdentity string) Msg {
+	return Msg{
+		OpCode:  &notifyAll,
+		Content: client.identity + " --> " + newIdentity,
+		client:  client,
+	}
 }
 
-func leaveAllMsg(client *Client)Msg{
+func leaveAllMsg(client *Client) Msg {
 	return Msg{
 		OpCode:  &leaveAll,
 		client:  client,
