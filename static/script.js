@@ -105,11 +105,6 @@ function updateMessages(newline,roomName=null,classes=[]){
 }
 
 function sendMessage(e){
-	// if(ws.readyState != WebSocket.OPEN){
-	// 	updateMessages("Not connected to server")
-	// 	inputField.value=""
-	// 	return
-	// }
 	// send message to server
 	let msg=e.target.value.trim()
 	let room=getRoomFromId(currentRoom.id)
