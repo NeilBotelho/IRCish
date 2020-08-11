@@ -1,7 +1,8 @@
-
 # Design Doc
 
-## Functionality
+## _Backend_
+----
+### Functionality
 1. User can join any room(roomName must satisfy [a-z0-9\\\-]{2,10} name) using ```/join roomName``` command
 1. User can leave any room using ```/leave roomName``` command
 1. User can send and receive messages to any room he/she joined
@@ -10,7 +11,7 @@
 
 
 
-## Data Structures used
+### Data Structures used
 1. **Client (struct):**
 	```golang
 	Client{ //global type
@@ -42,7 +43,7 @@
 	var RoomList map[string]Room //Local to broadcast function
 	```
 
-1. **entering (channel)**
+1. **entering (channel)*
 	```golang
 	var entering := make(chan Msg,chanBuff) //global channel
 	```
@@ -57,7 +58,7 @@
 	var messaging:= make(chan Msg,chanBuff) //global channel
 	```
 
-## Global Variables(never modified)
+### Global Variables(never modified)
 We use variables here instead of constants as we want to use the address of the following
 1. Operation Codes(type is uint8)
 	- communicate uint8 = 0
@@ -71,16 +72,16 @@ We use variables here instead of constants as we want to use the address of the 
 1. Default Room Constant
 	- defaultRoom = "general"
 
-## Global constants
+### Global constants
 1. Size constants
 	- clientMsgBuff
 	- chanBuff
 
 1. PingTimeout
 
-## Functions
+### Functions
 
-### -clientCreator
+##### -clientCreator
 Create Client object and announce client entering. Runs clientHandler in a goroutine and exits
 
 **Parameters:** w http.ResponseWriter, r \*http.Request
@@ -97,7 +98,7 @@ Create Client object and announce client entering. Runs clientHandler in a gorou
 - Adds client to defaultRoom using entering channel
 - Creates clientHandler go routine with client as argument and exits
 
-### -clientHandler
+##### -clientHandler
 Listens for incoming messages from clients and handles them
 
 **Parameters:** client \*Client
@@ -111,7 +112,7 @@ Listens for incoming messages from clients and handles them
 - If read error occurs, it runs ```closeClient``` function with and argument of client and exits. 
 - If error occurs during umarshaling the incoming message is discarded and we renter the loop
 
-### -resolveRequest
+##### -resolveRequest
 
 **Parameters:** client \*Client, msg Msg
 
@@ -126,7 +127,7 @@ Listens for incoming messages from clients and handles them
 	1. opcode=3, If the specified username is valid, change user identity and notify users in rooms that the current user has joined
 
 
-### -clientWriter
+##### -clientWriter
 Receives messages from cli.writeCh and sends to client. Pings client periodically to prevent ReadDeadline from closing active clients. Runs as a goroutine and each Client object has one associated with it
 
 **Parameters:** cli \*Client
@@ -140,7 +141,7 @@ Receives messages from cli.writeCh and sends to client. Pings client periodicall
 	1. If ping ticker sends a value it sends an empty message(ping) to the client with opcode 4
 	1. if Client.writeCh sends a value it sends it to the client
 
-### -closeClient
+##### -closeClient
 Annouces client departure in all rooms client joined and closes any open channels or goroutines
 
 **Parameters:** client \*Client
@@ -150,14 +151,14 @@ Annouces client departure in all rooms client joined and closes any open channel
 - send an empty struct over terminate channel(to signal clientWriter to close) and closes the terminate channel
 - closes client.writeCh
 
-### -randIdentity
+##### -randIdentity
 
 **Parameters:*** None
 
 **Performs:**
 - returns a randomly generated 5 digit number
 
-### -usernameValidate
+##### -usernameValidate
 Check if username is valid
 
 ***Parameters:*** username string
@@ -169,7 +170,7 @@ Check if username is valid
 - else it returns true
 
 
-### -broadcaster
+##### -broadcaster
 
 **Parameters:** None
 
@@ -190,5 +191,5 @@ Only a single instance of broadcaster is created (as a goroutine) and the RoomLi
 	1. If opcode=2(leave) it deletes the client entry in the specified room. No checking is done to see if client is in the room. 
 	1. If after the operation is complete the room is empty, the room is deleted from RoomList
 
-### Various message templating functions
+##### Various message templating functions
 Can be found in the client.go module. Used to reduce clutter caused by creating and populating Msg structs in the middle of functions
