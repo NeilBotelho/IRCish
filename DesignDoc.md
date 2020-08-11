@@ -191,5 +191,23 @@ Only a single instance of broadcaster is created (as a goroutine) and the RoomLi
 	1. If opcode=2(leave) it deletes the client entry in the specified room. No checking is done to see if client is in the room. 
 	1. If after the operation is complete the room is empty, the room is deleted from RoomList
 
-##### Various message templating functions
+#### Various message templating functions
 Can be found in the client.go module. Used to reduce clutter caused by creating and populating Msg structs in the middle of functions
+
+
+## _Frontend_
+----
+The front end, functionally consists of 3 separate parts. The roomlist, the  message feed and the input div.
+
+### The message feed
+The message feed is the container where all room messages will go. When a room(say _roomname_) is joined(in our case with the ```createRoom``` function) a new div with a class of "_message-display_" and an id of "_roomname_-messages" is created and placed inside the message feed div. In the css rules, the _message-display_ class is its has display property set to none, so the room messages are hidden by default. 
+
+When a user clicks on a room button, its message-display div has its display property set to block and that of the current room is set to none. Hence only one room's message-display is viewed at a time. 
+
+When a message is recieved from the server, it is added to the appropriate message-display by wrapping the message in a paragraph tag and appending it to the bottom of the inner html of the message-display tag.   
+
+### The roomlist
+Each button in the room list(_roomButton_) is created when a user joins a new room with the /join command. This happends simultaneously with the creation of a new message-display div in the message feed. A roomButton of a room named general would have a class of "_room-name_" and an id of "_general-room_".  Additionally every roomButton has a onClick event listener that switches to it corresponding room. 
+
+### The input div
+The input div has a max input lenght of 250 chars. It has a  onchange event listener that runs the sendMessage function. The sendMessage function contains the logic to send the server the appropriate response based on user input.
