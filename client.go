@@ -34,7 +34,7 @@ func clientCreator(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make write channel and terminate channel for Client object
-	writeCh := make(chan Msg)
+	writeCh := make(chan Msg,clientMsgBuff)
 	terminate := make(chan struct{})
 
 	// Make Client object
