@@ -1,6 +1,12 @@
 # Design Doc
 
 ## _Backend_
+Each client is assigned its own thread by the clientCreator function. This thread listens for messages from the client, processes these incoming messages and sends them to the broadcast thread. 
+
+The broadcast thread contains the RoomList(a list of active rooms and the records of which client is in which room). When a user wants to join a room or send a message to a room, the message has to go through the broadcast thread as the RoomList is local to it. There is only one broadcast thread and hence only one message can be handled at a time. If two client threads try to send a message to the broadcast thread simultaneously one will block(essentially sleep) until the broadcast thread finishes dealing with the other. This prevents race conditions from occuring. 
+Although this seems like it would make the system slow, in practise it is quite fast. This due to 
+1. Optimizations in the broadcast functions so that it deals with each messages as fast as possible
+2. Making the channel(pathway for threads to communicate) between client threads and the broadcast thread buffered, so that threads don't always block when sending messages to the broadcast thread.     
 ----
 ### Functionality
 1. User can join any room(roomName must satisfy [a-z0-9\\\-]{2,10} name) using ```/join roomName``` command
