@@ -72,14 +72,14 @@ func clientHandler(client *Client) {
 		if err != nil {
 			// Close connection in case read of error
 			closeClient(client)
-			log.Println("Socket closed", err)
+			log.Println("Socket closed:", err)
 			return
 		}
 
 		// Unpack JSON message from client into msg struct
 		err = json.Unmarshal(clientMsg, &msg)
 		if err != nil {
-			log.Println("Error unmarshalling")
+			log.Println("Error unmarshalling:",err)
 			continue
 		}
 
@@ -102,12 +102,10 @@ func resolveRequest(client *Client, msg Msg) {
 
 	switch *msg.OpCode {
 	case communicate:
-		log.Println("Communication")
 		// Set From field and send on messaging channel
 		msg.From = &client.identity
 		messaging <- msg
 	case join:
-		log.Println("Join")
 		// Set opCode to notify and send on messaging channel
 		msg.OpCode = &notify
 		msg.Content = client.identity + " Just entered"
@@ -116,7 +114,6 @@ func resolveRequest(client *Client, msg Msg) {
 		msg.OpCode = &join
 		entering <- msg
 	case leave:
-		log.Println("Leaving")
 		// Send msg on leaving channel
 		leaving <- msg
 		// Notify other users of departure
@@ -124,7 +121,6 @@ func resolveRequest(client *Client, msg Msg) {
 		msg.Content = client.identity + " Just left"
 		messaging <- msg
 	case identify:
-		log.Println("Identify")
 		// If specified username is valid,
 		// change user identity and
 		// notify users in rooms current user is joined
@@ -135,7 +131,6 @@ func resolveRequest(client *Client, msg Msg) {
 	case ping:
 		// This opcode is used to ensure client is still connected
 		// and to prevent ReadDeadline from closing active clients
-		log.Println("Ping")
 		return
 	}
 }
