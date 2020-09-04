@@ -32,6 +32,7 @@ func main() {
 	r := mux.NewRouter() // maybe set .StrictSlash(false)?
 	
 	// Heroku Doesn't support the following hence it won't be used.
+	// But it will be kept commented out as it is beneficial to have timeouts when they are supported.
 	/*srv := &http.Server{
 		Handler: r,
 		Addr:    "127.0.0.1:" + PORT,
@@ -55,8 +56,6 @@ func main() {
 	log.Print("Server running on " + PORT)
 	log.Fatal(http.ListenAndServe(":"+PORT,r))
 
-	// For when using a customised http server
-	// log.Fatal(srv.ListenAndServe())
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
