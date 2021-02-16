@@ -5,10 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	// "time"
 	"io/ioutil"
 	"github.com/gorilla/websocket"
-
 	"github.com/gorilla/mux"
 )
 
