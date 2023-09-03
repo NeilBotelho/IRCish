@@ -19,7 +19,7 @@ prints a list of available commands
 
 
 ## How can I try it?
-At the time of writing this(Jul 29 2020 8:55PM) there is a live version of with all the current features at https://ircish.herokuapp.com/
+At the time of writing this(Sept 03 2023 10:37PM) there is a live version of with all the current features at ircish.onrender.com 
 
 ```(psst UI improvements are more than welcome. I'm pretty terrible at UI design)```
 ![screenshot of frontend](./screenshots/frontend-Jul-29-2020.png)
